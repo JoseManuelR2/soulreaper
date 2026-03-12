@@ -10775,8 +10775,8 @@ MonoBehaviour:
     m_UseReference: 0
     m_Action:
       m_Name: Trigger
-      m_Type: 0
-      m_ExpectedControlType: 
+      m_Type: 1
+      m_ExpectedControlType: Button
       m_Id: 8a48f2d1-5897-44ef-9629-63203b103b3a
       m_Processors: 
       m_Interactions: 
