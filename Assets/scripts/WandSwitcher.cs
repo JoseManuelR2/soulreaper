@@ -1,24 +1,27 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Necesario para procesar el Input moderno
+using UnityEngine.InputSystem;
 
 public partial class WandSwitcher : MonoBehaviour
 {
     [Header("Referencias de Varitas")]
-    public GameObject[] wands; // Arrastra aquí tus 3 modelos
-    private int currentWandIndex = 0;
+    public GameObject[] wands; // 0-2 bolas, 3-5 plumas
+    private int currentBallIndex = 0;
+    private int currentFeatherIndex = 0; // índice relativo de pluma (0-2)
+    private bool activatedFeather = false;
 
     [Header("Input")]
     public InputActionProperty triggerAction; // Acción del gatillo
 
     void OnEnable()
     {
-        // Nos suscribimos al evento de "pulsado"
+        triggerAction.action.Enable();
         triggerAction.action.performed += OnTriggerPressed;
     }
 
     void OnDisable()
     {
         triggerAction.action.performed -= OnTriggerPressed;
+        triggerAction.action.Disable();
     }
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
@@ -28,15 +31,36 @@ public partial class WandSwitcher : MonoBehaviour
 
     void RotateWand()
     {
-        // 1. Desactivar varita actual
-        wands[currentWandIndex].SetActive(false);
+        int ballsCount = 3;
+        int feathersStart = 3; // índice inicial de las plumas en el array
 
-        // 2. Calcular siguiente índice (0, 1, 2 y vuelve a 0)
-        currentWandIndex = (currentWandIndex + 1) % wands.Length;
+        // 1️⃣ Desactivar la bola actual
+        wands[currentBallIndex].SetActive(false);
 
-        // 3. Activar nueva varita
-        wands[currentWandIndex].SetActive(true);
-        
-        Debug.Log($"Varita cambiada al modelo: {wands[currentWandIndex].name}");
+        // 2️⃣ Calcular siguiente índice de bola
+        currentBallIndex = (currentBallIndex + 1) % ballsCount;
+
+        // 3️⃣ Activar la nueva bola
+        wands[currentBallIndex].SetActive(true);
+
+        // 4️⃣ Cada vez que volvemos a la bola 0, rotamos la pluma
+        if (currentBallIndex == 0)
+        {
+            // Si ya activamos pluma antes, desactivamos la anterior
+            if (activatedFeather)
+            {
+                wands[feathersStart + currentFeatherIndex].SetActive(false);
+            }
+
+            // Activar la pluma actual
+            wands[feathersStart + currentFeatherIndex].SetActive(true);
+
+            // Preparar índice de pluma para la próxima vez
+            currentFeatherIndex = (currentFeatherIndex + 1) % ballsCount;
+
+            activatedFeather = true;
+        }
+
+        Debug.Log($"Bola: {wands[currentBallIndex].name}, Pluma: {(activatedFeather ? wands[feathersStart + ((currentFeatherIndex + ballsCount - 1) % ballsCount)].name : "Ninguna")}");
     }
 }

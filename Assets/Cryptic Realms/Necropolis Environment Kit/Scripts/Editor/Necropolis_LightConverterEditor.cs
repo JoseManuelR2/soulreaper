@@ -1,3 +1,4 @@
+/*
 using UnityEditor;
 using UnityEngine;
 
@@ -45,4 +46,4 @@ public class LightIntensityConverterEditor : Editor
             EditorUtility.SetDirty(script); // Mark the component as dirty
         }
     }
-}
+} */

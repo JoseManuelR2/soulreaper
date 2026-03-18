@@ -16076,7 +16076,7 @@ Transform:
   m_GameObject: {fileID: 1851018325}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0449, y: 0.4998, z: -0}
+  m_LocalPosition: {x: 0.0449, y: 0.4998, z: 0}
   m_LocalScale: {x: -2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16094,7 +16094,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 551e6039069333b42b3ec76a8983da07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirePentagonSpawner
-  firePrefab: {fileID: 5099431166652583641, guid: 8c51410e4f579f34f84ac8580fc8ece9, type: 3}
+  firePrefab: {fileID: 7458564200767833722, guid: 14dfd592f3ca9a3408b3d35c004ea0ec, type: 3}
   radius: 0.2
   fireScale: 1
   gripAction:
