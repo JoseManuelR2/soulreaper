@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public partial class WandSwitcher : MonoBehaviour
 {
+    public static List<string> Spell = new List<string>();
+
     [Header("Referencias de Varitas")]
     public GameObject[] wands; // 0-2 bolas, 3-5 plumas
     private int currentBallIndex = 0;
@@ -62,5 +65,28 @@ public partial class WandSwitcher : MonoBehaviour
         }
 
         Debug.Log($"Bola: {wands[currentBallIndex].name}, Pluma: {(activatedFeather ? wands[feathersStart + ((currentFeatherIndex + ballsCount - 1) % ballsCount)].name : "Ninguna")}");
+    }
+
+    public static void ProcessSpell()
+    {
+        Debug.Log("Procesando spell...");
+
+        Debug.Log("Spell: " + string.Join(" - ", Spell));
+
+        // Ejemplo de lógica simple
+        if (Spell.Count == 0)
+        {
+            Debug.Log("No se ha seleccionado nada");
+        }
+        else if (Spell.Count == 3)
+        {
+            Debug.Log("Hechizo de nivel 3!");
+        }
+
+        // Aquí puedes meter combinaciones reales:
+        // if (Spell[0] == "FireBlue" && Spell[1] == "FireRed") ...
+
+        // IMPORTANTE: limpiar después
+        Spell.Clear();
     }
 }

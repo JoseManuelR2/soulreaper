@@ -14654,6 +14654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FireSelfReplace
   selectedFirePrefab: {fileID: 2089860787992684173, guid: ab39c67909ab76940bdcaf4dd22f70c8, type: 3}
+  color: blue
   replacementScale: 0.25
 --- !u!65 &6947895935538972596
 BoxCollider:

@@ -1,65 +1,47 @@
+using System;
 using UnityEngine;
 
 public class FireSelfReplace : MonoBehaviour
 {
-    [Header("Prefab que reemplazará a esta llama")]
+    
     public GameObject selectedFirePrefab;
-
-    [Header("Escala del nuevo fuego")]
+    public String color;
     public float replacementScale = 0.25f;
 
     private void Awake()
     {
-        Debug.Log($"{name}: FireSelfReplace Awake called");
+        // Registrar este fuego en el registro global
+        FirePentagonSpawner.ActiveFires.Add(gameObject);
 
-        // Comprobamos si hay Collider
-        Collider col = GetComponent<Collider>();
-        if (col == null)
+        // Aseguramos Rigidbody si no existe
+        if (GetComponent<Rigidbody>() == null)
         {
-            Debug.LogWarning($"{name}: No Collider found on this GameObject!");
+            Rigidbody rb = gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity = false;
         }
-        else
-        {
-            Debug.Log($"{name}: Collider found, isTrigger = {col.isTrigger}");
-        }
+    }
 
-        // Comprobamos si hay Rigidbody
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            Debug.LogWarning($"{name}: No Rigidbody found! Trigger may not fire with wand");
-        }
-        else
-        {
-            Debug.Log($"{name}: Rigidbody found, isKinematic = {rb.isKinematic}");
-        }
+    private void OnDestroy()
+    {
+        // Eliminar del registro global cuando se destruye
+        FirePentagonSpawner.ActiveFires.Remove(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"{name}: OnTriggerEnter called with {other.name}, tag={other.tag}");
-
-        // Filtramos solo el objeto que hará el reemplazo (por ejemplo, la wand)
         if (other.CompareTag("wand"))
         {
-            Debug.Log($"{name}: Triggered by wand, replacing fire prefab");
-
-            Vector3 spawnPos = transform.position;
-
-            // Destruye esta bola de fuego
+            Vector3 pos = transform.position;
+            WandSwitcher.Spell.Add(color);
             Destroy(gameObject);
-            Debug.Log($"{name}: Fire destroyed");
 
-            // Instancia la bola de fuego seleccionada en su lugar
             if (selectedFirePrefab != null)
             {
-                GameObject newFire = Instantiate(selectedFirePrefab, spawnPos, Quaternion.identity);
+                GameObject newFire = Instantiate(selectedFirePrefab, pos, Quaternion.identity);
                 newFire.transform.localScale = Vector3.one * replacementScale;
-                Debug.Log($"{name}: Selected fire prefab instantiated at {spawnPos}");
-            }
-            else
-            {
-                Debug.LogWarning($"{name}: selectedFirePrefab is null!");
+
+                FirePentagonSpawner.ActiveFires.Add(newFire);
             }
         }
     }
