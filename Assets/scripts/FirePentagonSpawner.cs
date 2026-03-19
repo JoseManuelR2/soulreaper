@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class FirePentagonSpawner : MonoBehaviour
 {
     // Ahora podemos asignar 5 prefabs distintos desde el inspector
-    public GameObject[] firePrefabs; 
+    public GameObject[] firePrefabs;
     public float radius = 0.2f;
     public float fireScale = 0.25f;
 
@@ -23,13 +23,11 @@ public class FirePentagonSpawner : MonoBehaviour
 
         if (gripAction.action.WasPressedThisFrame())
         {
-            Debug.Log("GRIP PRESSED");
             SpawnPentagon();
         }
 
         if (gripAction.action.WasReleasedThisFrame())
         {
-            Debug.Log("GRIP RELEASED");
             DestroyPentagon();
         }
     }
