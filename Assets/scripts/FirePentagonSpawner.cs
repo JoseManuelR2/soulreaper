@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class FirePentagonSpawner : MonoBehaviour
 {
-    public GameObject firePrefab;
+    // Ahora podemos asignar 5 prefabs distintos desde el inspector
+    public GameObject[] firePrefabs; 
     public float radius = 0.2f;
     public float fireScale = 0.25f;
 
@@ -23,20 +24,24 @@ public class FirePentagonSpawner : MonoBehaviour
         if (gripAction.action.WasPressedThisFrame())
         {
             Debug.Log("GRIP PRESSED");
-
             SpawnPentagon();
         }
 
         if (gripAction.action.WasReleasedThisFrame())
         {
             Debug.Log("GRIP RELEASED");
-
             DestroyPentagon();
         }
     }
 
     void SpawnPentagon()
     {
+        if (firePrefabs == null || firePrefabs.Length < 5)
+        {
+            Debug.LogWarning("Debes asignar 5 prefabs distintos en firePrefabs");
+            return;
+        }
+
         Debug.Log("Spawning fire pentagon");
 
         int sides = 5;
@@ -51,7 +56,8 @@ public class FirePentagonSpawner : MonoBehaviour
             Vector3 localOffset = new Vector3(x, 0, z);
             Vector3 spawnPosition = transform.position + transform.TransformDirection(localOffset);
 
-            GameObject fire = Instantiate(firePrefab, spawnPosition, Quaternion.identity);
+            // Instancia un prefab diferente para cada lado
+            GameObject fire = Instantiate(firePrefabs[i], spawnPosition, Quaternion.identity);
 
             fire.transform.localScale = Vector3.one * fireScale;
 
