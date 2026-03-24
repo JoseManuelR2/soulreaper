@@ -162,9 +162,8 @@ public partial class WandSwitcher : MonoBehaviour
 
             // Hechizos especiales
             case "purple,red":
-            Debug.Log("Teleport");
             WandTypeSelector(FIREINDEX, PURPLEINDEX);
-
+            SpellManager.SetTeleport();  // 👈 Llama al teleport automáticamente
             break;
 
             case "purple,green":
