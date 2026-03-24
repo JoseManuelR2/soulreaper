@@ -1,19 +1,45 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public partial class WandSwitcher : MonoBehaviour
 {
     public static List<string> Spell = new List<string>();
 
+    private static int FIREINDEX = 0;
+    private static int ICEINDEX = 1;
+    private static int POISONINDEX = 2;
+
+    private static int YELLOWINDEX = 0;
+    private static int PURPLEINDEX = 1;
+    private static int BLUEINDEX = 2;
+    
     [Header("Referencias de Varitas")]
-    public GameObject[] wands; // 0-2 bolas, 3-5 plumas
-    private int currentBallIndex = 0;
-    private int currentFeatherIndex = 0; // índice relativo de pluma (0-2)
-    private bool activatedFeather = false;
+    public GameObject[] balls; 
+    public GameObject[] feathers;
+    
+    private static int? currentBallIndex = null;
+    private static int? currentFeatherIndex = null; // índice relativo de pluma (0-2)
+    private static bool activatedFeather = false;
+    
+    private static WandSwitcher instance; // Singleton reference
 
     [Header("Input")]
     public InputActionProperty triggerAction; // Acción del gatillo
+
+    void Awake()
+    {
+        // Initialize singleton instance
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void OnEnable()
     {
@@ -29,42 +55,45 @@ public partial class WandSwitcher : MonoBehaviour
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        RotateWand();
+        /* RotateWand(); */
     }
 
-    void RotateWand()
+    public static void WandTypeSelector(int? ball,  int? feather)
     {
-        int ballsCount = 3;
-        int feathersStart = 3; // índice inicial de las plumas en el array
-
-        // 1️⃣ Desactivar la bola actual
-        wands[currentBallIndex].SetActive(false);
-
-        // 2️⃣ Calcular siguiente índice de bola
-        currentBallIndex = (currentBallIndex + 1) % ballsCount;
-
-        // 3️⃣ Activar la nueva bola
-        wands[currentBallIndex].SetActive(true);
-
-        // 4️⃣ Cada vez que volvemos a la bola 0, rotamos la pluma
-        if (currentBallIndex == 0)
+        if (instance == null)
         {
-            // Si ya activamos pluma antes, desactivamos la anterior
-            if (activatedFeather)
-            {
-                wands[feathersStart + currentFeatherIndex].SetActive(false);
-            }
-
-            // Activar la pluma actual
-            wands[feathersStart + currentFeatherIndex].SetActive(true);
-
-            // Preparar índice de pluma para la próxima vez
-            currentFeatherIndex = (currentFeatherIndex + 1) % ballsCount;
-
-            activatedFeather = true;
+            Debug.LogError("WandSwitcher instance not found!");
+            return;
         }
 
-        Debug.Log($"Bola: {wands[currentBallIndex].name}, Pluma: {(activatedFeather ? wands[feathersStart + ((currentFeatherIndex + ballsCount - 1) % ballsCount)].name : "Ninguna")}");
+        if (currentBallIndex.HasValue)
+        {
+            instance.balls[currentBallIndex.Value].SetActive(false);
+        }
+
+        if (currentFeatherIndex.HasValue)
+        {
+            instance.feathers[currentFeatherIndex.Value].SetActive(false);
+        }
+
+
+        if (ball.HasValue)
+        {
+            instance.balls[ball.Value].SetActive(true);
+            currentBallIndex = ball.Value;
+        } else
+        {
+            currentBallIndex = null;
+        }
+
+        if (feather.HasValue)
+        {
+            instance.feathers[feather.Value].SetActive(true);
+            currentFeatherIndex = feather.Value;
+        } else
+        {
+            currentFeatherIndex = null;
+        }
     }
 
     public static void ProcessSpell()
@@ -73,20 +102,95 @@ public partial class WandSwitcher : MonoBehaviour
 
         Debug.Log("Spell: " + string.Join(" - ", Spell));
 
-        // Ejemplo de lógica simple
-        if (Spell.Count == 0)
+        // amarillo + cualquiera de los bases, hechizo potenciado
+        // amarillo + purpura + cualquiera de los bases, hechizo en area
+        // morado + verde = hechizo de curacion
+        // morado + azul = hechizo de escudo
+        // morado + rojo = hechizo de teleport
+        // rojo + verde + azul = recuperacion/regeneracion de mana
+        var key = string.Join(",", Spell);
+
+        switch (key)
         {
-            Debug.Log("No se ha seleccionado nada");
-        }
-        else if (Spell.Count == 3)
-        {
-            Debug.Log("Hechizo de nivel 3!");
+            // Hechizos base
+            case "red":
+            Debug.Log("Hechizo de fuego");
+            WandTypeSelector(FIREINDEX, null);
+            break;
+
+            case "blue":
+            Debug.Log("Hechizo de hielo");
+            WandTypeSelector(ICEINDEX, null);
+            break;
+
+            case "green":
+            Debug.Log("Hechizo de veneno");
+            WandTypeSelector(POISONINDEX, null);
+            break;
+
+            // Amarillo + cualquiera de las bases -> Hechizo potenciado
+            case "yellow,red":
+            Debug.Log("Hechizo potenciado");
+            WandTypeSelector(FIREINDEX, YELLOWINDEX);
+            break;
+
+            case "yellow,blue":
+            Debug.Log("Hechizo potenciado");
+            WandTypeSelector(ICEINDEX, YELLOWINDEX);
+            break;
+            
+            case "yellow,green":
+            Debug.Log("Hechizo potenciado");
+            WandTypeSelector(POISONINDEX, YELLOWINDEX);
+            break;
+
+            // Amarillo + morado + cualquiera de las bases -> Hechizo en area potenciado
+            case "yellow,purple,red":
+            Debug.Log("Hechizo en area potenciado");
+            WandTypeSelector(FIREINDEX, BLUEINDEX);
+            break;
+
+            case "yellow,purple,blue":
+            Debug.Log("Hechizo en area potenciado");
+            WandTypeSelector(ICEINDEX, BLUEINDEX);
+            break;
+            
+            case "yellow,purple,green":
+            Debug.Log("Hechizo en area potenciado");
+            WandTypeSelector(POISONINDEX, BLUEINDEX);
+            break;
+
+            // Hechizos especiales
+            case "purple,red":
+            Debug.Log("Teleport");
+            WandTypeSelector(FIREINDEX, PURPLEINDEX);
+
+            break;
+
+            case "purple,green":
+            Debug.Log("Curacion");
+            WandTypeSelector(POISONINDEX, PURPLEINDEX);
+            break;
+
+            case "purple,blue":
+            Debug.Log("Escudo");
+            WandTypeSelector(ICEINDEX, PURPLEINDEX);
+            break;
+
+            case "green,red,blue":
+            Debug.Log("Recuperacion de mana");
+            WandTypeSelector(null, null);
+            break;
+            
+            
+            default:
+            Debug.Log("Hechizo invalido");
+            break;
         }
 
-        // Aquí puedes meter combinaciones reales:
-        // if (Spell[0] == "FireBlue" && Spell[1] == "FireRed") ...
+        Spell.Clear();
 
         // IMPORTANTE: limpiar después
-        Spell.Clear();
+        
     }
 }
