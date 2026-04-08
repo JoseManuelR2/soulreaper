@@ -1942,6 +1942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bc01f2f884874e52b43ba73da9cb083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WandSwitcher
+  firePoint: {fileID: 1957060401}
   balls:
   - {fileID: 1591742883}
   - {fileID: 1591742882}
@@ -1950,10 +1951,15 @@ MonoBehaviour:
   - {fileID: 1591742880}
   - {fileID: 1591742879}
   - {fileID: 1591742878}
-  firePoint: {fileID: 1957060401}
-  fireProjectilePrefab: {fileID: 3922745998220990364, guid: 0775b6f2ada5236498ca49fb9586ef7c, type: 3}
-  iceProjectilePrefab: {fileID: 0}
-  poisonProjectilePrefab: {fileID: 0}
+  fireProjectilePrefab: {fileID: 2108794496002143557, guid: fe63852a15f43eb4d8ce112581655ef7, type: 3}
+  iceProjectilePrefab: {fileID: 2108794496002143557, guid: 35942a9937e17ce4083a732165081713, type: 3}
+  poisonProjectilePrefab: {fileID: 2108794496002143557, guid: ec08b105feaa5614aa2dcb0c3d31f05e, type: 3}
+  fireUpProjectilePrefab: {fileID: 8423333546025224644, guid: 0775b6f2ada5236498ca49fb9586ef7c, type: 3}
+  iceUpProjectilePrefab: {fileID: 8423333546025224644, guid: f18d6167ab4bec44da4de27d507debbd, type: 3}
+  poisonUpProjectilePrefab: {fileID: 8423333546025224644, guid: ad14d48fbcb82e240a2e0ac8dc7bdeb4, type: 3}
+  fireAOEProjectilePrefab: {fileID: 8423333546025224644, guid: f645dbb95023a984a860c234b94b7379, type: 3}
+  iceAOEProjectilePrefab: {fileID: 8423333546025224644, guid: 39c5626e23157b64c92e2763d3c0373a, type: 3}
+  poisonAOEProjectilePrefab: {fileID: 8423333546025224644, guid: fe540cc2f6121034fab613296188768b, type: 3}
   triggerAction:
     m_UseReference: 1
     m_Action:

@@ -14,16 +14,27 @@ public partial class WandSwitcher : MonoBehaviour
     private static int PURPLEINDEX = 1;
     private static int BLUEINDEX = 2;
 
+    public Transform firePoint; // EL PUNTO DESDE DONDE SALE EL PROYECTIL (Punta de la varita)
+    
     [Header("Referencias de Varitas")]
     public GameObject[] balls;
     public GameObject[] feathers;
 
-    [Header("Disparo")]
-    public Transform firePoint; // EL PUNTO DESDE DONDE SALE EL PROYECTIL (Punta de la varita)
+
+    [Header("Hechizos Normales")]
     public GameObject fireProjectilePrefab;
     public GameObject iceProjectilePrefab;
     public GameObject poisonProjectilePrefab;
 
+    [Header("Hechizos Fuertes")]
+    public GameObject fireUpProjectilePrefab;
+    public GameObject iceUpProjectilePrefab;
+    public GameObject poisonUpProjectilePrefab;
+
+    [Header("Hechizos Area")]
+    public GameObject fireAOEProjectilePrefab;
+    public GameObject iceAOEProjectilePrefab;
+    public GameObject poisonAOEProjectilePrefab;
 
     // Guardamos qué hechizo está cargado actualmente
     public enum ActiveSpell { None, Fire, Ice, Poison, FireUp, IceUp, PoisonUp, FireAOE, IceAOE, PoisonAOE, TP, Heal, Shield, Mana}
@@ -72,6 +83,12 @@ public partial class WandSwitcher : MonoBehaviour
             case ActiveSpell.Fire: prefabToShoot = fireProjectilePrefab; break;
             case ActiveSpell.Ice: prefabToShoot = iceProjectilePrefab; break;
             case ActiveSpell.Poison: prefabToShoot = poisonProjectilePrefab; break;
+            case ActiveSpell.FireUp: prefabToShoot = fireUpProjectilePrefab; break;
+            case ActiveSpell.IceUp: prefabToShoot = iceUpProjectilePrefab; break;
+            case ActiveSpell.PoisonUp: prefabToShoot = poisonUpProjectilePrefab; break;
+            case ActiveSpell.FireAOE: prefabToShoot = fireAOEProjectilePrefab; break;
+            case ActiveSpell.IceAOE: prefabToShoot = iceAOEProjectilePrefab; break;
+            case ActiveSpell.PoisonAOE: prefabToShoot = poisonAOEProjectilePrefab; break;
         }
 
         if (prefabToShoot != null)
