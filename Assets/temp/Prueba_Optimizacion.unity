@@ -6318,8 +6318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1fe9e6adf344485f88a21d970224558, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5025574804217827672, guid: d398db4157e2f4e6b8457f0b469b83ac, type: 3}
-  spawnInterval: 9999
+  enemyPrefab: {fileID: 217926407676718255, guid: 21af78ae34d5cb94cb6a5836c33f5016, type: 3}
+  spawnInterval: 20
 --- !u!4 &835699916
 Transform:
   m_ObjectHideFlags: 0

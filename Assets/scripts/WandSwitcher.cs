@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 public partial class WandSwitcher : MonoBehaviour
 {
@@ -14,31 +13,34 @@ public partial class WandSwitcher : MonoBehaviour
     private static int YELLOWINDEX = 0;
     private static int PURPLEINDEX = 1;
     private static int BLUEINDEX = 2;
-    
+
     [Header("Referencias de Varitas")]
-    public GameObject[] balls; 
+    public GameObject[] balls;
     public GameObject[] feathers;
-    
+
+    [Header("Disparo")]
+    public Transform firePoint; // EL PUNTO DESDE DONDE SALE EL PROYECTIL (Punta de la varita)
+    public GameObject fireProjectilePrefab;
+    public GameObject iceProjectilePrefab;
+    public GameObject poisonProjectilePrefab;
+
+
+    // Guardamos qué hechizo está cargado actualmente
+    public enum ActiveSpell { None, Fire, Ice, Poison, FireUp, IceUp, PoisonUp, FireAOE, IceAOE, PoisonAOE, TP, Heal, Shield, Mana}
+    private static ActiveSpell currentActiveSpell = ActiveSpell.None;
+
     private static int? currentBallIndex = null;
-    private static int? currentFeatherIndex = null; // índice relativo de pluma (0-2)
-    private static bool activatedFeather = false;
-    
-    private static WandSwitcher instance; // Singleton reference
+    private static int? currentFeatherIndex = null;
+
+    private static WandSwitcher instance;
 
     [Header("Input")]
-    public InputActionProperty triggerAction; // Acción del gatillo
+    public InputActionProperty triggerAction;
 
     void Awake()
     {
-        // Initialize singleton instance
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
+        if (instance == null) { instance = this; }
+        else if (instance != this) { Destroy(gameObject); }
     }
 
     void OnEnable()
@@ -55,45 +57,52 @@ public partial class WandSwitcher : MonoBehaviour
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        /* RotateWand(); */
+        Shoot(); // Llama a la función de disparo
     }
 
-    public static void WandTypeSelector(int? ball,  int? feather)
+    private void Shoot()
     {
-        if (instance == null)
+        if (currentActiveSpell == ActiveSpell.None || firePoint == null) return;
+
+        GameObject prefabToShoot = null;
+
+        // Elegir la bala correcta según el estado actual
+        switch (currentActiveSpell)
         {
-            Debug.LogError("WandSwitcher instance not found!");
-            return;
+            case ActiveSpell.Fire: prefabToShoot = fireProjectilePrefab; break;
+            case ActiveSpell.Ice: prefabToShoot = iceProjectilePrefab; break;
+            case ActiveSpell.Poison: prefabToShoot = poisonProjectilePrefab; break;
         }
 
-        if (currentBallIndex.HasValue)
+        if (prefabToShoot != null)
         {
-            instance.balls[currentBallIndex.Value].SetActive(false);
-        }
+            // Instanciar el proyectil en la posición y rotación de la punta de la varita
+            Quaternion rotationToAdd = Quaternion.Euler(-90f, 0, 0);
 
-        if (currentFeatherIndex.HasValue)
-        {
-            instance.feathers[currentFeatherIndex.Value].SetActive(false);
+            Instantiate(prefabToShoot, firePoint.position, firePoint.rotation * rotationToAdd);
         }
+    }
 
+    public static void WandTypeSelector(int? ball, int? feather)
+    {
+        if (instance == null) return;
+
+        if (currentBallIndex.HasValue) instance.balls[currentBallIndex.Value].SetActive(false);
+        if (currentFeatherIndex.HasValue) instance.feathers[currentFeatherIndex.Value].SetActive(false);
 
         if (ball.HasValue)
         {
             instance.balls[ball.Value].SetActive(true);
             currentBallIndex = ball.Value;
-        } else
-        {
-            currentBallIndex = null;
         }
+        else { currentBallIndex = null; }
 
         if (feather.HasValue)
         {
             instance.feathers[feather.Value].SetActive(true);
             currentFeatherIndex = feather.Value;
-        } else
-        {
-            currentFeatherIndex = null;
         }
+        else { currentFeatherIndex = null; }
     }
 
     public static void ProcessSpell()
@@ -114,82 +123,96 @@ public partial class WandSwitcher : MonoBehaviour
         {
             // Hechizos base
             case "red":
-            Debug.Log("Hechizo de fuego");
-            WandTypeSelector(FIREINDEX, null);
-            break;
+                Debug.Log("Hechizo de fuego");
+                currentActiveSpell = ActiveSpell.Fire;
+                WandTypeSelector(FIREINDEX, null);
+                break;
 
             case "blue":
-            Debug.Log("Hechizo de hielo");
-            WandTypeSelector(ICEINDEX, null);
-            break;
+                Debug.Log("Hechizo de hielo");
+                currentActiveSpell = ActiveSpell.Ice;
+                WandTypeSelector(ICEINDEX, null);
+                break;
 
             case "green":
-            Debug.Log("Hechizo de veneno");
-            WandTypeSelector(POISONINDEX, null);
-            break;
+                Debug.Log("Hechizo de veneno");
+                currentActiveSpell = ActiveSpell.Poison;
+                WandTypeSelector(POISONINDEX, null);
+                break;
 
             // Amarillo + cualquiera de las bases -> Hechizo potenciado
             case "yellow,red":
-            Debug.Log("Hechizo potenciado");
-            WandTypeSelector(FIREINDEX, YELLOWINDEX);
-            break;
+                Debug.Log("Hechizo potenciado (Fuego)");
+                currentActiveSpell = ActiveSpell.FireUp;
+                WandTypeSelector(FIREINDEX, YELLOWINDEX);
+                break;
 
             case "yellow,blue":
-            Debug.Log("Hechizo potenciado");
-            WandTypeSelector(ICEINDEX, YELLOWINDEX);
-            break;
-            
+                Debug.Log("Hechizo potenciado (Hielo)");
+                currentActiveSpell = ActiveSpell.IceUp;
+                WandTypeSelector(ICEINDEX, YELLOWINDEX);
+                break;
+
             case "yellow,green":
-            Debug.Log("Hechizo potenciado");
-            WandTypeSelector(POISONINDEX, YELLOWINDEX);
-            break;
+                Debug.Log("Hechizo potenciado (Veneno)");
+                currentActiveSpell = ActiveSpell.PoisonUp;
+                WandTypeSelector(POISONINDEX, YELLOWINDEX);
+                break;
 
             // Amarillo + morado + cualquiera de las bases -> Hechizo en area potenciado
             case "yellow,purple,red":
-            Debug.Log("Hechizo en area potenciado");
-            WandTypeSelector(FIREINDEX, BLUEINDEX);
-            break;
+                Debug.Log("Hechizo en area (Fuego)");
+                currentActiveSpell = ActiveSpell.FireAOE;
+                WandTypeSelector(FIREINDEX, BLUEINDEX);
+                break;
 
             case "yellow,purple,blue":
-            Debug.Log("Hechizo en area potenciado");
-            WandTypeSelector(ICEINDEX, BLUEINDEX);
-            break;
-            
+                Debug.Log("Hechizo en area (Hielo)");
+                currentActiveSpell = ActiveSpell.IceAOE;
+                WandTypeSelector(ICEINDEX, BLUEINDEX);
+                break;
+
             case "yellow,purple,green":
-            Debug.Log("Hechizo en area potenciado");
-            WandTypeSelector(POISONINDEX, BLUEINDEX);
-            break;
+                Debug.Log("Hechizo en area (Veneno)");
+                currentActiveSpell = ActiveSpell.PoisonAOE;
+                WandTypeSelector(POISONINDEX, BLUEINDEX);
+                break;
 
             // Hechizos especiales
             case "purple,red":
-            WandTypeSelector(FIREINDEX, PURPLEINDEX);
-            SpellManager.SetTeleport();  // 👈 Llama al teleport automáticamente
-            break;
+                Debug.Log("Teleport");
+                currentActiveSpell = ActiveSpell.TP;
+                WandTypeSelector(FIREINDEX, PURPLEINDEX);
+                SpellManager.SetTeleport();
+                break;
 
             case "purple,green":
-            Debug.Log("Curacion");
-            WandTypeSelector(POISONINDEX, PURPLEINDEX);
-            break;
+                Debug.Log("Curacion");
+                currentActiveSpell = ActiveSpell.Heal;
+                WandTypeSelector(POISONINDEX, PURPLEINDEX);
+                break;
 
             case "purple,blue":
-            Debug.Log("Escudo");
-            WandTypeSelector(ICEINDEX, PURPLEINDEX);
-            break;
+                Debug.Log("Escudo");
+                currentActiveSpell = ActiveSpell.Shield;
+                WandTypeSelector(ICEINDEX, PURPLEINDEX);
+                break;
 
             case "green,red,blue":
-            Debug.Log("Recuperacion de mana");
-            WandTypeSelector(null, null);
-            break;
-            
-            
+                Debug.Log("Recuperacion de mana");
+                currentActiveSpell = ActiveSpell.Mana;
+                WandTypeSelector(null, null);
+                break;
+
             default:
-            Debug.Log("Hechizo invalido");
-            break;
+                Debug.Log("Hechizo invalido");
+                currentActiveSpell = ActiveSpell.None;
+                break;
         }
 
         Spell.Clear();
 
         // IMPORTANTE: limpiar después
-        
+
     }
 }
