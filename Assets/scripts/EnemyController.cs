@@ -1,18 +1,22 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System; // Necesario para usar Action
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
 public class EnemyController : MonoBehaviour
 {
     [Header("Configuración de Movimiento")]
-    public bool canMove = true; // Lo pongo en true por defecto para que pruebes
+    public bool canMove = true; 
     public float detectionRange = 20.0f;
     public float moveSpeed = 2.0f;
 
     [Header("Atributos")]
     public float health = 100f;
     public float resistance = 10f;
+
+    // Evento que avisa al WaveManager cuando muere
+    public event Action OnEnemyDeath; 
 
     private NavMeshAgent agent;
     private Animator anim;
@@ -42,16 +46,12 @@ public class EnemyController : MonoBehaviour
 
         if (canMove && distance <= detectionRange)
         {
-            // 1. Activar el agente y darle el destino (el NavMesh calcula el camino)
             agent.isStopped = false;
             agent.SetDestination(player.position);
-
-            // 2. Animación
             anim.Play("Z_Walk");
         }
         else
         {
-            // Detener al agente si está fuera de rango
             agent.isStopped = true;
             anim.Play("Z_idle");
         }
@@ -72,9 +72,26 @@ public class EnemyController : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        agent.isStopped = true; // Que deje de caminar al morir
+        agent.isStopped = true; 
+
+        // --- Lógica para mirar al jugador al morir ---
+        if (player != null)
+        {
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+            directionToPlayer.y = 0; // Evita que el zombie rote hacia arriba o hacia abajo si estás en terreno elevado
+
+            if (directionToPlayer != Vector3.zero) 
+            {
+                transform.rotation = Quaternion.LookRotation(directionToPlayer);
+            }
+        }
+
         anim.Play("Z_FallingBack");
         capsuleCollider.enabled = false;
-        Destroy(gameObject, 5f); // Le damos medio segundo antes de desaparecer
+
+        // Avisamos al WaveManager que hemos muerto
+        OnEnemyDeath?.Invoke(); 
+
+        Destroy(gameObject, 5f); 
     }
 }
