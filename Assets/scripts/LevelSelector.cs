@@ -4,15 +4,59 @@ using System.Collections;
 
 public class LevelSelector : MonoBehaviour
 {
+    [Header("Configuración de Puerta y Niveles")]
+    [Tooltip("Puedes arrastrar la puerta aquí si está en la misma escena, o dejarlo vacío para que la busque sola.")]
+    public GameObject doorObj;
+
     public Object level1Scene;
     public Object level2Scene;
     private bool isLoading = false;
 
     private string currentSceneLoaded = "";
 
+    [Header("Objetos Interactuables (Calaveras)")]
+    public Transform level1Object; // Arrastra aquí la calavera del nivel 1
+
+    public Transform level2Object; // Arrastra aquí la calavera del nivel 2
+
+    public Transform level3Object; // Arrastra aquí la calavera del nivel 3
+
+
+    private Vector3 lvl1StartPos;
+    private Quaternion lvl1StartRot;
+
+
+    private Vector3 lvl2StartPos;
+    private Quaternion lvl2StartRot;
+
+    private Vector3 lvl3StartPos;
+    private Quaternion lvl3StartRot;
+
+    private void Start()
+    {
+        if (level1Object != null)
+        {
+            lvl1StartPos = level1Object.position;
+            lvl1StartRot = level1Object.rotation;
+        }
+        
+        if (level2Object != null)
+        {
+            lvl2StartPos = level2Object.position;
+            lvl2StartRot = level2Object.rotation;
+        }
+
+        if (level3Object != null)
+        {
+            lvl3StartPos = level3Object.position;
+            lvl3StartRot = level3Object.rotation;
+        }
+
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (isLoading) return; // 👈 BLOQUEO
+        if (isLoading) return;
 
         Transform parent = other.transform.parent;
 
@@ -37,9 +81,8 @@ public class LevelSelector : MonoBehaviour
         if (currentSceneLoaded == sceneName)
             yield break;
 
-        isLoading = true; // 👈 EMPIEZA BLOQUEO
+        isLoading = true; 
 
-        // Descargar escena anterior
         if (!string.IsNullOrEmpty(currentSceneLoaded))
         {
             AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentSceneLoaded);
@@ -59,36 +102,111 @@ public class LevelSelector : MonoBehaviour
 
         loadOp.allowSceneActivation = true;
 
+        while (!loadOp.isDone)
+        {
+            yield return null;
+        }
+
+        yield return null;
         yield return null;
 
-        GameObject door = GameObject.Find("Door_02_reinforced");
-
-        if (door != null)
+        if (doorObj == null)
         {
-            StartCoroutine(RotateDoor(door.transform, 3.3f, 100f));
+            doorObj = GameObject.Find("Door_02_reinforced");
+        }
+
+        if (doorObj != null)
+        {
+            DoorController door = doorObj.GetComponent<DoorController>();
+            if (door != null) 
+            {
+                door.OpenDoor();
+
+                // Buscamos el trigger de entrada y lo encendemos
+                GameObject startTriggerObj = GameObject.Find("DoorTrigger_Start");
+                if (startTriggerObj != null)
+                {
+                    Collider startCollider = startTriggerObj.GetComponent<Collider>();
+                    if (startCollider != null)
+                    {
+                        startCollider.enabled = true; // ¡Listo para que el jugador cruce!
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("LevelSelector: No encontré 'DoorTrigger_Start' para activarlo.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("El objeto 'Door_02_reinforced' no tiene el script DoorController puesto.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el objeto de la puerta");
         }
 
         currentSceneLoaded = sceneName;
 
         Debug.Log("Escena cargada: " + sceneName);
 
-        isLoading = false; // 👈 DESBLOQUEO
+        isLoading = false;
     }
 
-    IEnumerator RotateDoor(Transform door, float duration, float angle)
+
+    public void ResetInteractables()
     {
-        Quaternion startRotation = door.rotation;
-        Quaternion endRotation = startRotation * Quaternion.Euler(0, angle, 0);
+        ForceResetObject(level1Object, lvl1StartPos, lvl1StartRot);
+        ForceResetObject(level2Object, lvl2StartPos, lvl2StartRot);
+        Debug.Log("Objetos del lobby devueltos a su posición original.");
+    }
 
-        float time = 0f;
+    private void ForceResetObject(Transform obj, Vector3 pos, Quaternion rot)
+    {
+        if (obj == null) return;
 
-        while (time < duration)
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            door.rotation = Quaternion.Slerp(startRotation, endRotation, time / duration);
-            time += Time.deltaTime;
-            yield return null;
+            rb.isKinematic = true; 
+            
+            obj.position = pos;
+            obj.rotation = rot;
+            
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            
+            rb.isKinematic = false; 
         }
+        else
+        {
+            obj.position = pos;
+            obj.rotation = rot;
+        }
+    }
 
-        door.rotation = endRotation;
+    public string GetCurrentSceneName()
+    {
+        return currentSceneLoaded;
+    }
+
+    public void UnloadCurrentLevel()
+    {
+        if (!string.IsNullOrEmpty(currentSceneLoaded))
+        {
+            StartCoroutine(UnloadRoutine());
+        }
+    }
+
+    private IEnumerator UnloadRoutine()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentSceneLoaded);
+        yield return unloadOp;
+
+        currentSceneLoaded = ""; 
+        Debug.Log("Nivel descargado");
     }
 }

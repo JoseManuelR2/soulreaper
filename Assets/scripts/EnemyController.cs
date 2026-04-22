@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System; // Necesario para usar Action
+using System; 
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
@@ -15,7 +15,6 @@ public class EnemyController : MonoBehaviour
     public float health = 100f;
     public float resistance = 10f;
 
-    // Evento que avisa al WaveManager cuando muere
     public event Action OnEnemyDeath; 
 
     private NavMeshAgent agent;
@@ -74,11 +73,11 @@ public class EnemyController : MonoBehaviour
         isDead = true;
         agent.isStopped = true; 
 
-        // --- Lógica para mirar al jugador al morir ---
+        // mirar al jugador al morir 
         if (player != null)
         {
             Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            directionToPlayer.y = 0; // Evita que el zombie rote hacia arriba o hacia abajo si estás en terreno elevado
+            directionToPlayer.y = 0;
 
             if (directionToPlayer != Vector3.zero) 
             {
@@ -89,7 +88,7 @@ public class EnemyController : MonoBehaviour
         anim.Play("Z_FallingBack");
         capsuleCollider.enabled = false;
 
-        // Avisamos al WaveManager que hemos muerto
+    
         OnEnemyDeath?.Invoke(); 
 
         Destroy(gameObject, 5f); 

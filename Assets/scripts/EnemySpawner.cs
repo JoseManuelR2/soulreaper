@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // Arrastra aquí el Prefab del zombie
+    public GameObject enemyPrefab;
     public float spawnInterval = 5f;
 
     void Start()

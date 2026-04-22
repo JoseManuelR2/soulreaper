@@ -6,6 +6,7 @@ TagManager:
   tags:
   - wand
   - Interactable
+  - Anchor
   layers:
   - Default
   - TransparentFX

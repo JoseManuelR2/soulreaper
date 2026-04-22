@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-// Esta clase permite configurar cada oleada desde el Inspector
 [System.Serializable]
 public class WaveConfig
 {   
@@ -11,6 +10,9 @@ public class WaveConfig
     
     [Tooltip("Máximo de enemigos que pueden estar vivos a la vez en esta ronda")]
     public int maxSimultaneousEnemies = 3;
+
+    [Tooltip("Tiempo hasta la siguiente ronda")]
+    public int breakTime = 5;
 }
 
 public class WaveManager : MonoBehaviour
@@ -18,6 +20,7 @@ public class WaveManager : MonoBehaviour
     [Header("Configuración General")]
     public GameObject enemyPrefab;
     public Transform[] spawnPoints; 
+    public DoorController levelDoor;
 
     [Header("Configuración de Oleadas")]
     [Tooltip("Añade aquí las oleadas que quieras. El tamaño de la lista define el total de rondas.")]
@@ -28,10 +31,46 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int enemiesSpawnedInWave = 0;
     [SerializeField] private int currentEnemiesAlive = 0;
 
-    private int lastSpawnIndex = -1; // Para evitar repetir el mismo punto de spawn seguido
+    private int lastSpawnIndex = -1;
 
     void Start()
     {
+        if (levelDoor == null)
+        {
+            GameObject doorObj = GameObject.Find("Door_02_reinforced");
+            if (doorObj != null) levelDoor = doorObj.GetComponent<DoorController>();
+        }
+
+        GameObject startTriggerObj = GameObject.Find("DoorTrigger_Start");
+        if (startTriggerObj != null)
+        {
+            WaveStartTrigger trigger = startTriggerObj.GetComponent<WaveStartTrigger>();
+            if (trigger != null)
+            {
+                trigger.waveManager = this; 
+                trigger.levelDoor = this.levelDoor; 
+                Debug.Log("WaveManager: Nivel cargado y enlazado al Lobby correctamente.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("WaveManager: No encontré 'DoorTrigger_Start' en el Lobby.");
+        }
+    }
+
+    public void StartWaves()
+    {
+
+        if (levelDoor == null)
+        {
+            GameObject doorObj = GameObject.Find("Door_02_reinforced");
+            if (doorObj != null)
+            {
+                levelDoor = doorObj.GetComponent<DoorController>();
+            }
+
+        }
+
         if (waves.Count > 0)
         {
             StartCoroutine(WaveRoutine());
@@ -40,42 +79,57 @@ public class WaveManager : MonoBehaviour
         {
             Debug.LogError("No has configurado ninguna oleada en el WaveManager.");
         }
-    }
+}
 
     IEnumerator WaveRoutine()
     {
-        // Recorremos la lista de oleadas
         for (currentWaveIndex = 0; currentWaveIndex < waves.Count; currentWaveIndex++)
         {
             WaveConfig currentWave = waves[currentWaveIndex];
             
             enemiesSpawnedInWave = 0;
 
-            // Mientras no hayamos spawneado todos los de la oleada, o queden vivos
             while (enemiesSpawnedInWave < currentWave.totalEnemies || currentEnemiesAlive > 0)
             {
-                // Si aún quedan por spawnear y no hemos superado el límite simultáneo de ESTA oleada específica
                 if (enemiesSpawnedInWave < currentWave.totalEnemies && currentEnemiesAlive < currentWave.maxSimultaneousEnemies)
                 {
                     SpawnEnemy();
                 }
                 
-                yield return new WaitForSeconds(0.5f); // Pequeña pausa para no saturar el juego
+                yield return new WaitForSeconds(0.5f);
             }
-            yield return new WaitForSeconds(3f); // Tiempo de respiro entre oleadas
+            
+            yield return new WaitForSeconds(currentWave.breakTime); 
         }
         
         Debug.Log("Todas las oleadas terminadas.");
+
+        if (levelDoor != null)
+        {
+            levelDoor.OpenDoor();
+        }
+
+        GameObject endTriggerObj = GameObject.Find("DoorTrigger_End");
+        if (endTriggerObj != null)
+        {
+            Collider endCollider = endTriggerObj.GetComponent<Collider>();
+            if (endCollider != null)
+            {
+                endCollider.enabled = true;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("WaveManager: No encontré el objeto 'DoorTrigger_End' para activarlo.");
+        }
     }
 
     void SpawnEnemy()
     {
         if (spawnPoints.Length == 0) return;
 
-        // --- Mejora en el sorteo de Spawn Points ---
         int randomIndex = UnityEngine.Random.Range(0, spawnPoints.Length);
 
-        // Si hay más de un punto de spawn, evitamos que repita el mismo nodo que el anterior
         if (spawnPoints.Length > 1)
         {
             while (randomIndex == lastSpawnIndex)
@@ -86,7 +140,6 @@ public class WaveManager : MonoBehaviour
         
         lastSpawnIndex = randomIndex;
         Transform selectedPoint = spawnPoints[randomIndex];
-        // -------------------------------------------
         
         GameObject newEnemy = Instantiate(enemyPrefab, selectedPoint.position, selectedPoint.rotation);
         
