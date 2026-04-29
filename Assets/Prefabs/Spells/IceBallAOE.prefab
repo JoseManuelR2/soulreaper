@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8437151481333576584}
   - component: {fileID: 4992062023295243462}
   - component: {fileID: 8435640990941795284}
-  - component: {fileID: 5738556605172111046}
+  - component: {fileID: 3380916178151632574}
   m_Layer: 0
   m_Name: IceBallAOE
   m_TagString: Untagged
@@ -141,7 +141,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5738556605172111046
+--- !u!114 &3380916178151632574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,9 +150,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8423333546025224644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fdd292ee388c6b4fb90e90f2030eb84, type: 3}
+  m_Script: {fileID: 11500000, guid: 759234d6b1121a34a9fc960fc6e7cf42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 15
-  damage: 30
-  lifeTime: 5
+  damage: 35
+  lifeTime: 3

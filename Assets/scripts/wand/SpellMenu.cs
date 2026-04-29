@@ -2,12 +2,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public class FirePentagonSpawner : MonoBehaviour
+public class SpellMenu : MonoBehaviour
 {
     public GameObject[] firePrefabs;
     public float radius = 0.2f;
     public float fireScale = 0.25f;
     public InputActionProperty gripAction;
+
+    [Header("Audio")]
+    public AudioClip menuOpenSound;
 
     public static List<GameObject> ActiveFires = new List<GameObject>();
 
@@ -21,6 +24,32 @@ public class FirePentagonSpawner : MonoBehaviour
 
     void SpawnPentagon()
     {
+        if (WandController.Instance != null)
+        {
+            if (WandController.Instance.audioSource != null)
+            {
+                if (menuOpenSound != null)
+                {
+                    WandController.Instance.audioSource.pitch = 1f;
+                    WandController.Instance.audioSource.time = 0.5f;
+                    WandController.Instance.audioSource.PlayOneShot(menuOpenSound);
+                }
+                else
+                {
+                    Debug.LogWarning("SpellMenu: No has asignado el AudioClip 'menuOpenSound' en el Inspector.");
+                }
+            }
+            else
+            {
+                Debug.LogError("SpellMenu: El WandController no tiene un AudioSource asignado o encontrado.");
+            }
+            WandController.Instance.SendHaptic(0.2f, 0.1f); // Vibración suave al abrir el menú
+        }
+        else
+        {
+            Debug.LogError("SpellMenu: No se puede reproducir sonido porque WandController.Instance es NULO.");
+        }
+
         int sides = firePrefabs.Length;
         for (int i = 0; i < sides; i++)
         {
@@ -35,7 +64,7 @@ public class FirePentagonSpawner : MonoBehaviour
 
     void DestroyPentagon()
     {
-        WandSwitcher.ProcessSpell();
+        WandController.ProcessSpell();
         foreach (GameObject fire in new List<GameObject>(ActiveFires))
         {
             if (fire != null) Destroy(fire);

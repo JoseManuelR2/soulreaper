@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public partial class WandSwitcher : MonoBehaviour
+public partial class WandController : MonoBehaviour
 {
     public static List<string> Spell = new List<string>();
 
@@ -43,15 +43,26 @@ public partial class WandSwitcher : MonoBehaviour
     private static int? currentBallIndex = null;
     private static int? currentFeatherIndex = null;
 
-    private static WandSwitcher instance;
+    private static WandController instance;
+    public static WandController Instance => instance;
 
     [Header("Input")]
     public InputActionProperty triggerAction;
+
+    [Header("Audio y Háptica")]
+    public AudioSource audioSource;
+    public AudioClip runeSelectSound;
+    public AudioClip spellReadySound;
 
     void Awake()
     {
         if (instance == null) { instance = this; }
         else if (instance != this) { Destroy(gameObject); }
+
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+
+        if (audioSource != null) Debug.Log("WandController: AudioSource listo.");
+        else Debug.LogWarning("WandController: No se encontró AudioSource en la varita.");
     }
 
     void OnEnable()
@@ -122,6 +133,40 @@ public partial class WandSwitcher : MonoBehaviour
         else { currentFeatherIndex = null; }
     }
 
+    public void AddRune(string colorRune)
+    {
+        Spell.Add(colorRune);
+
+        if (audioSource != null && runeSelectSound != null)
+        {
+            // Incrementa un semitono por cada runa añadida
+            int runeIndex = Spell.Count - 1;
+            audioSource.pitch = Mathf.Pow(1.059463f, runeIndex);
+            audioSource.PlayOneShot(runeSelectSound);
+        }
+
+        SendHaptic(0.5f, 0.1f); // Vibración media para la selección de runa
+    }
+
+    public void SendHaptic(float amplitude, float duration)
+    {
+        if (triggerAction.action != null && triggerAction.action.controls.Count > 0)
+        {
+            if (triggerAction.action.controls[0].device is UnityEngine.InputSystem.XR.XRControllerWithRumble xrController)
+            {
+                xrController.SendImpulse(amplitude, duration);
+                return;
+            }
+        }
+
+        var devices = new List<UnityEngine.XR.InputDevice>();
+        UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.Controller, devices);
+        foreach (var device in devices)
+        {
+            device.SendHapticImpulse(0u, amplitude, duration);
+        }
+    }
+
     public static void ProcessSpell()
     {
         Debug.Log("Procesando spell...");
@@ -146,7 +191,7 @@ public partial class WandSwitcher : MonoBehaviour
                 break;
 
             case "blue":
-                Debug.Log("Hechizo de hielo");
+                Debug.Log("Hechizo de hielo");  
                 currentActiveSpell = ActiveSpell.Ice;
                 WandTypeSelector(ICEINDEX, null);
                 break;
@@ -225,6 +270,16 @@ public partial class WandSwitcher : MonoBehaviour
                 Debug.Log("Hechizo invalido");
                 currentActiveSpell = ActiveSpell.None;
                 break;
+        }
+
+        if (currentActiveSpell != ActiveSpell.None)
+        {
+            if (instance.audioSource != null && instance.spellReadySound != null)
+            {
+                instance.audioSource.pitch = 1f; // Restauramos el pitch a normal
+                instance.audioSource.PlayOneShot(instance.spellReadySound);
+            }
+            instance.SendHaptic(1.0f, 0.4f); // Vibración fuerte al confirmar hechizo
         }
 
         Spell.Clear();

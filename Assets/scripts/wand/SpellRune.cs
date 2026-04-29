@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class FireSelfReplace : MonoBehaviour
+public class SpellRune : MonoBehaviour
 {
     
     public GameObject selectedFirePrefab;
@@ -10,10 +10,8 @@ public class FireSelfReplace : MonoBehaviour
 
     private void Awake()
     {
-        // Registrar este fuego en el registro global
-        FirePentagonSpawner.ActiveFires.Add(gameObject);
+        SpellMenu.ActiveFires.Add(gameObject);
 
-        // Aseguramos Rigidbody si no existe
         if (GetComponent<Rigidbody>() == null)
         {
             Rigidbody rb = gameObject.AddComponent<Rigidbody>();
@@ -24,8 +22,7 @@ public class FireSelfReplace : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Eliminar del registro global cuando se destruye
-        FirePentagonSpawner.ActiveFires.Remove(gameObject);
+        SpellMenu.ActiveFires.Remove(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -33,7 +30,7 @@ public class FireSelfReplace : MonoBehaviour
         if (other.CompareTag("wand"))
         {
             Vector3 pos = transform.position;
-            WandSwitcher.Spell.Add(color);
+            WandController.Instance.AddRune(color);
             Destroy(gameObject);
 
             if (selectedFirePrefab != null)
@@ -41,7 +38,7 @@ public class FireSelfReplace : MonoBehaviour
                 GameObject newFire = Instantiate(selectedFirePrefab, pos, Quaternion.identity);
                 newFire.transform.localScale = Vector3.one * replacementScale;
 
-                FirePentagonSpawner.ActiveFires.Add(newFire);
+                SpellMenu.ActiveFires.Add(newFire);
             }
         }
     }
