@@ -1,11 +1,17 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))] 
 public class DoorController : MonoBehaviour
 {
     [Header("Configuración de la puerta")]
     public float openAngle = 100f;
     public float duration = 3.3f;
+
+    [Header("Configuración de Audio")]
+    public AudioSource audioSource;
+    [Tooltip("Sonido de la puerta")]
+    public AudioClip doorSound;
 
     private Quaternion closedRotation;
     private Quaternion openRotation;
@@ -15,18 +21,33 @@ public class DoorController : MonoBehaviour
     {
         closedRotation = transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     public void OpenDoor()
     {
         if (currentCoroutine != null) StopCoroutine(currentCoroutine);
         currentCoroutine = StartCoroutine(RotateDoor(openRotation));
+
+        if (audioSource != null && doorSound != null)
+        {
+            audioSource.PlayOneShot(doorSound);
+        }
     }
 
     public void CloseDoor()
     {
         if (currentCoroutine != null) StopCoroutine(currentCoroutine);
         currentCoroutine = StartCoroutine(RotateDoor(closedRotation));
+
+        if (audioSource != null && doorSound != null)
+        {
+            audioSource.PlayOneShot(doorSound);
+        }
     }
 
     IEnumerator RotateDoor(Quaternion targetRotation)
