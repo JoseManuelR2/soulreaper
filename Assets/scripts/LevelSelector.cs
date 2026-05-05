@@ -10,6 +10,7 @@ public class LevelSelector : MonoBehaviour
 
     public Object level1Scene;
     public Object level2Scene;
+    public Object level3Scene;
     private bool isLoading = false;
 
     private string currentSceneLoaded = "";
@@ -57,17 +58,29 @@ public class LevelSelector : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (isLoading) return;
+        // Buscar el ancestro más cercano con la tag "Interactable" para mayor robustez
+        Transform t = other.transform;
+        Transform interactableAncestor = null;
+        while (t != null)
+        {
+            if (t.CompareTag("Interactable"))
+            {
+                interactableAncestor = t;
+                break;
+            }
+            t = t.parent;
+        }
 
-        Transform parent = other.transform.parent;
-
-        if (parent != null && parent.CompareTag("Interactable"))
+        if (interactableAncestor != null)
         {
             string sceneToLoad = "";
 
-            if (parent.name == "level1")
-                sceneToLoad = level1Scene.name;
-            else if (parent.name == "level2")
-                sceneToLoad = level2Scene.name;
+            if (interactableAncestor.name == "level1")
+                sceneToLoad = level1Scene != null ? level1Scene.name : "";
+            else if (interactableAncestor.name == "level2")
+                sceneToLoad = level2Scene != null ? level2Scene.name : "";
+            else if (interactableAncestor.name == "level3")
+                sceneToLoad = level3Scene != null ? level3Scene.name : "";
 
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
@@ -159,6 +172,7 @@ public class LevelSelector : MonoBehaviour
     {
         ForceResetObject(level1Object, lvl1StartPos, lvl1StartRot);
         ForceResetObject(level2Object, lvl2StartPos, lvl2StartRot);
+        ForceResetObject(level3Object, lvl3StartPos, lvl3StartRot);
         Debug.Log("Objetos del lobby devueltos a su posición original.");
     }
 
@@ -174,10 +188,11 @@ public class LevelSelector : MonoBehaviour
             obj.position = pos;
             obj.rotation = rot;
             
+            // usar las propiedades correctas de Rigidbody para esta versión
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             
-            rb.isKinematic = false; 
+            rb.isKinematic = false;
         }
         else
         {
