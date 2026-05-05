@@ -14,6 +14,7 @@ public class EnemyController : MonoBehaviour
     [Header("Atributos")]
     public float health = 100f;
     public float resistance = 10f;
+    public float damageToPlayer = 20f; // Daño que quita al contactar al jugador
 
     public event Action OnEnemyDeath; 
 
@@ -53,6 +54,27 @@ public class EnemyController : MonoBehaviour
         {
             agent.isStopped = true;
             anim.Play("Z_idle");
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (isDead) return;
+
+        // Detectamos si lo que tocamos es el jugador
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerController.Instance?.TakeDamage(damageToPlayer);
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (isDead) return;
+
+        if (other.CompareTag("Player") || (other.transform.parent != null && other.transform.parent.CompareTag("Player")))
+        {
+            PlayerController.Instance?.TakeDamage(damageToPlayer);
         }
     }
 
