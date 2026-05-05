@@ -1989,6 +1989,7 @@ MonoBehaviour:
   health: 100
   resistance: 0
   damageToPlayer: 20
+  manaRecovered: 30
 --- !u!54 &-2301582099043423801
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2011,7 +2012,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0

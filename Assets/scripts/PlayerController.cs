@@ -44,6 +44,15 @@ public class PlayerController : MonoBehaviour
         mana = maxMana;
     }
 
+    private void Start()
+    {
+        if (GameOverManager.isRetry)
+        {
+            transform.rotation *= Quaternion.Euler(0, 180f, 0);
+            GameOverManager.isRetry = false; // La apagamos para la próxima vez
+        }
+    }
+
     private void Update()
     {
         if (isRecoveringMana)
@@ -169,5 +178,6 @@ public class PlayerController : MonoBehaviour
     private void Die()
     {
         Debug.Log("El jugador ha muerto.");
+        GameOverManager.Instance?.TriggerGameOver();
     }
 }

@@ -9,18 +9,15 @@ public class BookController : MonoBehaviour
 
     void Update()
     {
-        // Asegurarnos de que el jugador existe antes de actualizar
         if (PlayerController.Instance != null)
         {
             if (hpBar != null)
             {
-                // fillAmount va de 0 a 1, así que dividimos la vida actual por la máxima
                 hpBar.fillAmount = PlayerController.Instance.health / PlayerController.Instance.maxHealth;
             }
 
             if (manaBar != null)
             {
-                // Hacemos lo mismo para el maná
                 manaBar.fillAmount = PlayerController.Instance.mana / PlayerController.Instance.maxMana;
             }
         }

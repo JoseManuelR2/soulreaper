@@ -246,6 +246,13 @@ public partial class WandController : MonoBehaviour
 
         Debug.Log("Spell: " + string.Join(" - ", Spell));
 
+        // Si abrimos y cerramos sin seleccionar ninguna runa, simplemente mantenemos todo tal cual
+        if (Spell.Count == 0)
+        {
+            Debug.Log("No se trazó ningún hechizo. Manteniendo el anterior.");
+            return;
+        }
+
         // Parar regeneraciones activas de maná o salud si cambiamos de hechizo (como si se rompiese la concentración)
         if (PlayerController.Instance != null) PlayerController.Instance.CancelRegenerations();
 
@@ -256,6 +263,7 @@ public partial class WandController : MonoBehaviour
         // morado + rojo = hechizo de teleport
         // rojo + verde + azul = recuperacion/regeneracion de mana
         var key = string.Join(",", Spell);
+        bool isValidSpell = true;
 
         switch (key)
         {
@@ -343,12 +351,12 @@ public partial class WandController : MonoBehaviour
                 break;
 
             default:
-                Debug.Log("Hechizo invalido");
-                currentActiveSpell = ActiveSpell.None;
+                Debug.Log("Hechizo invalido. Manteniendo el anterior.");
+                isValidSpell = false;
                 break;
         }
 
-        if (currentActiveSpell != ActiveSpell.None)
+        if (isValidSpell && currentActiveSpell != ActiveSpell.None)
         {
             if (instance.audioSource != null && instance.spellReadySound != null)
             {
@@ -360,7 +368,6 @@ public partial class WandController : MonoBehaviour
 
         Spell.Clear();
 
-        // IMPORTANTE: limpiar después
 
     }
 }
