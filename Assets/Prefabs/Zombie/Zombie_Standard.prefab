@@ -1987,7 +1987,7 @@ MonoBehaviour:
   detectionRange: 20
   moveSpeed: 0.1
   health: 100
-  resistance: 10
+  resistance: 0
   damageToPlayer: 20
 --- !u!54 &-2301582099043423801
 Rigidbody:

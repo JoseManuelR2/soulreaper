@@ -36,9 +36,20 @@ public partial class WandController : MonoBehaviour
     public GameObject iceAOEProjectilePrefab;
     public GameObject poisonAOEProjectilePrefab;
 
+    [Header("Costes de Maná")]
+    public float baseSpellCost = 0f;
+    public float upSpellCost = 25f;
+    public float aoeSpellCost = 25f;
+    public float specialSpellCost = 30f; // Para TP, Heal, Shield
+    public float manaSpellCost = 10f;
+
     // Guardamos qué hechizo está cargado actualmente
     public enum ActiveSpell { None, Fire, Ice, Poison, FireUp, IceUp, PoisonUp, FireAOE, IceAOE, PoisonAOE, TP, Heal, Shield, Mana}
     private static ActiveSpell currentActiveSpell = ActiveSpell.None;
+
+    [Header("Configuración de Disparo")]
+    public float spellCooldown = 1.0f;
+    private float nextSpellTime = 0f;
 
     private static int? currentBallIndex = null;
     private static int? currentFeatherIndex = null;
@@ -85,6 +96,68 @@ public partial class WandController : MonoBehaviour
     private void Shoot()
     {
         if (currentActiveSpell == ActiveSpell.None || firePoint == null) return;
+
+        // Comprobar si seguimos en tiempo de enfriamiento (cooldown)
+        if (Time.time < nextSpellTime)
+        {
+            return; // Salimos de la función sin disparar ni gastar maná
+        }
+
+        // 1. Determinar coste de maná del hechizo actual
+        float manaCost = 0f;
+        switch (currentActiveSpell)
+        {
+            case ActiveSpell.Fire:
+            case ActiveSpell.Ice:
+            case ActiveSpell.Poison:
+                manaCost = baseSpellCost; break;
+            case ActiveSpell.FireUp:
+            case ActiveSpell.IceUp:
+            case ActiveSpell.PoisonUp:
+                manaCost = upSpellCost; break;
+            case ActiveSpell.FireAOE:
+            case ActiveSpell.IceAOE:
+            case ActiveSpell.PoisonAOE:
+                manaCost = aoeSpellCost; break;
+            case ActiveSpell.TP:
+            case ActiveSpell.Heal:
+            case ActiveSpell.Shield:
+                manaCost = specialSpellCost; break;
+            case ActiveSpell.Mana:
+                manaCost = manaSpellCost; break;
+        }
+
+        // 2. Consumir maná antes de disparar
+        if (PlayerController.Instance != null && !PlayerController.Instance.ConsumeMana(manaCost))
+        {
+            Debug.Log("No hay suficiente maná para lanzar el hechizo.");
+            return; // No disparamos si no hay maná
+        }
+
+        // 3. Aplicar el cooldown ya que el hechizo se va a lanzar
+        nextSpellTime = Time.time + spellCooldown;
+
+        // 4. Manejar los hechizos que no disparan proyectiles
+        if (currentActiveSpell == ActiveSpell.Mana)
+        {
+            if (PlayerController.Instance != null)
+                PlayerController.Instance.StartManaRecovery();
+            return; 
+        }
+
+        if (currentActiveSpell == ActiveSpell.Heal)
+        {
+            if (PlayerController.Instance != null)
+                PlayerController.Instance.StartHealthRecovery();
+            return;
+        }
+
+        if (currentActiveSpell == ActiveSpell.Shield)
+        {
+            if (PlayerController.Instance != null)
+                PlayerController.Instance.ActivateShield();
+            return;
+        }
 
         GameObject prefabToShoot = null;
 
@@ -172,6 +245,9 @@ public partial class WandController : MonoBehaviour
         Debug.Log("Procesando spell...");
 
         Debug.Log("Spell: " + string.Join(" - ", Spell));
+
+        // Parar regeneraciones activas de maná o salud si cambiamos de hechizo (como si se rompiese la concentración)
+        if (PlayerController.Instance != null) PlayerController.Instance.CancelRegenerations();
 
         // amarillo + cualquiera de los bases, hechizo potenciado
         // amarillo + purpura + cualquiera de los bases, hechizo en area

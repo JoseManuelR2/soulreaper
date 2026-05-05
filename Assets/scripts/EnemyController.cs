@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
     public float health = 100f;
     public float resistance = 10f;
     public float damageToPlayer = 20f; // Daño que quita al contactar al jugador
+    public float manaRecovered = 30f; // Daño que quita al contactar al jugador
 
     public event Action OnEnemyDeath; 
 
@@ -109,6 +110,8 @@ public class EnemyController : MonoBehaviour
 
         anim.Play("Z_FallingBack");
         capsuleCollider.enabled = false;
+
+        PlayerController.Instance?.AddMana(manaRecovered);
 
     
         OnEnemyDeath?.Invoke(); 
