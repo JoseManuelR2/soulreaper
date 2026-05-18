@@ -8,6 +8,10 @@ public class GameOverManager : MonoBehaviour
     public static GameOverManager Instance { get; private set; }
     
     public static bool isRetry = false;
+    
+    [Header("Referencias UI")]
+    [Tooltip("Arrastra aquí el objeto RedFadeScreen que cuelga de la Main Camera")]
+    public GameObject redFadeScreenObj;
 
     private Image redFadeImage;
     private GameObject gameOverMenu;
@@ -21,12 +25,11 @@ public class GameOverManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        Transform redFadeTransform = transform.Find("RedFadeScreen");
-        if (redFadeTransform != null)
+        if (redFadeScreenObj != null)
         {
-            redFadeImage = redFadeTransform.GetComponent<Image>();
+            redFadeImage = redFadeScreenObj.GetComponent<Image>();
         }
-        else Debug.LogWarning("GameOverManager: No se encontró 'RedFadeScreen' como hijo.");
+        else Debug.LogWarning("GameOverManager: No se ha asignado 'RedFadeScreenObj' en el inspector.");
 
         Transform menuTransform = transform.Find("GameOverMenu");
         if (menuTransform != null)
@@ -46,6 +49,8 @@ public class GameOverManager : MonoBehaviour
 
     private void Start()
     {
+        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(false); // Lo mantenemos apagado al iniciar
+
         if (redFadeImage != null)
         {
             Color c = redFadeImage.color;
@@ -67,16 +72,30 @@ public class GameOverManager : MonoBehaviour
 
     private IEnumerator GameOverRoutine()
     {
+        // Detener las oleadas inmediatamente
+        WaveManager waveManager = UnityEngine.Object.FindFirstObjectByType<WaveManager>();
+        if (waveManager != null) waveManager.StopWaves();
+
+        // Destruir a todos los enemigos que estén vivos en el mapa
+        EnemyController[] enemies = UnityEngine.Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        foreach (EnemyController enemy in enemies)
+        {
+            Destroy(enemy.gameObject);
+        }
+
+        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(true); // Lo encendemos justo al morir
+
         if (redFadeImage != null)
         {
-            redFadeImage.raycastTarget = true; 
+            // Lo dejamos en false para que el láser VR pueda traspasarlo y pulsar los botones
+            redFadeImage.raycastTarget = false; 
             Color c = redFadeImage.color;
             float elapsedTime = 0f;
 
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime += Time.deltaTime;
-                c.a = Mathf.Lerp(0f, 0.75f, elapsedTime / fadeDuration);
+                c.a = Mathf.Lerp(0f, 0.50f, elapsedTime / fadeDuration);
                 redFadeImage.color = c;
                 yield return null;
             }
@@ -87,6 +106,21 @@ public class GameOverManager : MonoBehaviour
 
         if (gameOverMenu != null)
         {
+            // Colocamos el menú delante del jugador antes de activarlo
+            if (Camera.main != null)
+            {
+                Transform camTransform = Camera.main.transform;
+                Vector3 forwardDirection = camTransform.forward;
+                forwardDirection.y = 0; // Ignoramos si el jugador está mirando arriba o abajo
+                if (forwardDirection == Vector3.zero) forwardDirection = camTransform.up;
+                forwardDirection.Normalize();
+
+                // Posicionamos a 1.5 metros y a la altura exacta de la cámara
+                gameOverMenu.transform.position = camTransform.position + forwardDirection * 1.5f;
+                // Lo rotamos para que encare la misma dirección que el jugador
+                gameOverMenu.transform.rotation = Quaternion.LookRotation(forwardDirection);
+            }
+
             gameOverMenu.SetActive(true);
         }
     }

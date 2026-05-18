@@ -81,6 +81,11 @@ public class WaveManager : MonoBehaviour
         }
 }
 
+    public void StopWaves()
+    {
+        StopAllCoroutines();
+    }
+
     IEnumerator WaveRoutine()
     {
         for (currentWaveIndex = 0; currentWaveIndex < waves.Count; currentWaveIndex++)
