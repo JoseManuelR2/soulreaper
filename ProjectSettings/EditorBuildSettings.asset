@@ -9,13 +9,13 @@ EditorBuildSettings:
     path: Assets/temp/main.unity
     guid: fd2a4849f3fc85f47aeb6c824cc03634
   - enabled: 1
-    path: Assets/temp/Prueba_Optimizacion.unity
+    path: Assets/temp/level_1.unity
     guid: a6cebb16d4bd44346a58698cc117ef97
   - enabled: 1
-    path: Assets/temp/Prueba2_Optimizaciion.unity
+    path: Assets/temp/level_2.unity
     guid: a66f3920fb34868409bdfb19a4a3adb8
   - enabled: 1
-    path: Assets/temp/Prueba3_Optimizacion.unity
+    path: Assets/temp/level_3.unity
     guid: 76d7de34673421140aa5653bf864cc8b
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}

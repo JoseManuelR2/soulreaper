@@ -6248,9 +6248,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelSelector
   doorObj: {fileID: 1529012482}
-  level1Scene: Prueba_Optimizacion
-  level2Scene: Prueba2_Optimizaciion
-  level3Scene: Prueba3_Optimizacion
+  level1Scene: level_1
+  level2Scene: level_2
+  level3Scene: level_3
   level1Object: {fileID: 1992084110}
   level2Object: {fileID: 74700950}
   level3Object: {fileID: 1508282176}
