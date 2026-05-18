@@ -8,28 +8,25 @@ public class LevelSelector : MonoBehaviour
     [Tooltip("Puedes arrastrar la puerta aquí si está en la misma escena, o dejarlo vacío para que la busque sola.")]
     public GameObject doorObj;
 
-    public Object level1Scene;
-    public Object level2Scene;
-    public Object level3Scene;
+    [Tooltip("Escribe el nombre de la escena del nivel 1")]
+    public string level1Scene;
+    [Tooltip("Escribe el nombre de la escena del nivel 2")]
+    public string level2Scene;
+    [Tooltip("Escribe el nombre de la escena del nivel 3")]
+    public string level3Scene;
+    
     private bool isLoading = false;
-
     private string currentSceneLoaded = "";
 
     [Header("Objetos Interactuables (Calaveras)")]
-    public Transform level1Object; // Arrastra aquí la calavera del nivel 1
-
-    public Transform level2Object; // Arrastra aquí la calavera del nivel 2
-
-    public Transform level3Object; // Arrastra aquí la calavera del nivel 3
-
+    public Transform level1Object; 
+    public Transform level2Object; 
+    public Transform level3Object; 
 
     private Vector3 lvl1StartPos;
     private Quaternion lvl1StartRot;
-
-
     private Vector3 lvl2StartPos;
     private Quaternion lvl2StartRot;
-
     private Vector3 lvl3StartPos;
     private Quaternion lvl3StartRot;
 
@@ -52,13 +49,12 @@ public class LevelSelector : MonoBehaviour
             lvl3StartPos = level3Object.position;
             lvl3StartRot = level3Object.rotation;
         }
-
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (isLoading) return;
-        // Buscar el ancestro más cercano con la tag "Interactable" para mayor robustez
+        
         Transform t = other.transform;
         Transform interactableAncestor = null;
         while (t != null)
@@ -76,11 +72,11 @@ public class LevelSelector : MonoBehaviour
             string sceneToLoad = "";
 
             if (interactableAncestor.name == "level1")
-                sceneToLoad = level1Scene != null ? level1Scene.name : "";
+                sceneToLoad = level1Scene;
             else if (interactableAncestor.name == "level2")
-                sceneToLoad = level2Scene != null ? level2Scene.name : "";
+                sceneToLoad = level2Scene;
             else if (interactableAncestor.name == "level3")
-                sceneToLoad = level3Scene != null ? level3Scene.name : "";
+                sceneToLoad = level3Scene;
 
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
@@ -135,14 +131,13 @@ public class LevelSelector : MonoBehaviour
             {
                 door.OpenDoor();
 
-                // Buscamos el trigger de entrada y lo encendemos
                 GameObject startTriggerObj = GameObject.Find("DoorTrigger_Start");
                 if (startTriggerObj != null)
                 {
                     Collider startCollider = startTriggerObj.GetComponent<Collider>();
                     if (startCollider != null)
                     {
-                        startCollider.enabled = true; // ¡Listo para que el jugador cruce!
+                        startCollider.enabled = true; 
                     }
                 }
                 else
@@ -161,12 +156,9 @@ public class LevelSelector : MonoBehaviour
         }
 
         currentSceneLoaded = sceneName;
-
         Debug.Log("Escena cargada: " + sceneName);
-
         isLoading = false;
     }
-
 
     public void ResetInteractables()
     {
@@ -188,7 +180,6 @@ public class LevelSelector : MonoBehaviour
             obj.position = pos;
             obj.rotation = rot;
             
-            // usar las propiedades correctas de Rigidbody para esta versión
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             
