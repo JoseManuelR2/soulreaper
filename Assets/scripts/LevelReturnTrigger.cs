@@ -25,6 +25,11 @@ public class LevelReturnTrigger : MonoBehaviour
 
                 if (levelDoor != null) levelDoor.CloseDoor();
                 levelSelector.UnloadCurrentLevel();
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.lobbyLoop);
+                }
             }
         }
     }

@@ -80,6 +80,7 @@ public class LevelSelector : MonoBehaviour
 
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
+                if (WandController.Instance != null) WandController.Instance.SendHaptic(0.5f, 0.2f);
                 StartCoroutine(LoadLevelAsync(sceneToLoad));
             }
         }
@@ -130,6 +131,11 @@ public class LevelSelector : MonoBehaviour
             if (door != null) 
             {
                 door.OpenDoor();
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayNarrative(AudioManager.Instance.selectLevelNarrative);
+                }
 
                 GameObject startTriggerObj = GameObject.Find("DoorTrigger_Start");
                 if (startTriggerObj != null)

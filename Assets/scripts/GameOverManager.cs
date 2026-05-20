@@ -49,7 +49,7 @@ public class GameOverManager : MonoBehaviour
 
     private void Start()
     {
-        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(false); // Lo mantenemos apagado al iniciar
+        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(false);
 
         if (redFadeImage != null)
         {
@@ -72,22 +72,24 @@ public class GameOverManager : MonoBehaviour
 
     private IEnumerator GameOverRoutine()
     {
-        // Detener las oleadas inmediatamente
         WaveManager waveManager = UnityEngine.Object.FindFirstObjectByType<WaveManager>();
         if (waveManager != null) waveManager.StopWaves();
 
-        // Destruir a todos los enemigos que estén vivos en el mapa
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.gameOverSound);
+        }
+
         EnemyController[] enemies = UnityEngine.Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
         foreach (EnemyController enemy in enemies)
         {
             Destroy(enemy.gameObject);
         }
 
-        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(true); // Lo encendemos justo al morir
+        if (redFadeScreenObj != null) redFadeScreenObj.SetActive(true);
 
         if (redFadeImage != null)
         {
-            // Lo dejamos en false para que el láser VR pueda traspasarlo y pulsar los botones
             redFadeImage.raycastTarget = false; 
             Color c = redFadeImage.color;
             float elapsedTime = 0f;
@@ -106,18 +108,15 @@ public class GameOverManager : MonoBehaviour
 
         if (gameOverMenu != null)
         {
-            // Colocamos el menú delante del jugador antes de activarlo
             if (Camera.main != null)
             {
                 Transform camTransform = Camera.main.transform;
                 Vector3 forwardDirection = camTransform.forward;
-                forwardDirection.y = 0; // Ignoramos si el jugador está mirando arriba o abajo
+                forwardDirection.y = 0;
                 if (forwardDirection == Vector3.zero) forwardDirection = camTransform.up;
                 forwardDirection.Normalize();
 
-                // Posicionamos a 1.5 metros y a la altura exacta de la cámara
                 gameOverMenu.transform.position = camTransform.position + forwardDirection * 1.5f;
-                // Lo rotamos para que encare la misma dirección que el jugador
                 gameOverMenu.transform.rotation = Quaternion.LookRotation(forwardDirection);
             }
 
@@ -128,6 +127,7 @@ public class GameOverManager : MonoBehaviour
     public void RetryGame()
     {
         isRetry = true;
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.lobbyLoop);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

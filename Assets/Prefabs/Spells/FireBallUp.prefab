@@ -29105,3 +29105,4 @@ MonoBehaviour:
   speed: 40
   damage: 60
   lifeTime: 3
+  impactSound: {fileID: 8300000, guid: 2f3fca05b4078dc9f8fd692bc82adedf, type: 3}

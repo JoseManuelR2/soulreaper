@@ -28,6 +28,14 @@ public class DoorController : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        if (audioSource != null && AudioManager.Instance != null && AudioManager.Instance.sfxGroup != null)
+        {
+            audioSource.outputAudioMixerGroup = AudioManager.Instance.sfxGroup;
+        }
+    }
+
     public void OpenDoor()
     {
         if (currentCoroutine != null) StopCoroutine(currentCoroutine);

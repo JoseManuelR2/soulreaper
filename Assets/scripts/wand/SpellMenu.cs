@@ -43,7 +43,7 @@ public class SpellMenu : MonoBehaviour
             {
                 Debug.LogError("SpellMenu: El WandController no tiene un AudioSource asignado o encontrado.");
             }
-            WandController.Instance.SendHaptic(0.2f, 0.1f); // Vibración suave al abrir el menú
+        WandController.Instance.SendHaptic(0.3f, 0.15f); // +50% más fuerte al invocar el menú
         }
         else
         {

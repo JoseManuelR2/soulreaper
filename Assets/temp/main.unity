@@ -2471,7 +2471,7 @@ Transform:
   m_GameObject: {fileID: 888907089}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -12.25, y: 2.7, z: 1.929947}
+  m_LocalPosition: {x: -15.031, y: 2.7, z: 1.929947}
   m_LocalScale: {x: 0.33000007, y: 7.39, z: 0.46}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5251,6 +5251,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8053059486601427065, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+      propertyPath: m_MoveSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8075699244217119362, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_Layer
       value: 3
@@ -5966,6 +5970,66 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1551380424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1551380426}
+  - component: {fileID: 1551380425}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1551380425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551380424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13d051041d352db4ea7ec01a43797954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  lobbyLoop: {fileID: 8300000, guid: 1a40e9c3f7dd6f5829615732d1a5fd9a, type: 3}
+  level1Loop: {fileID: 8300000, guid: b88f8a5646cc68650a38ecdd6f5229e8, type: 3}
+  level2Loop: {fileID: 8300000, guid: f08fcdcac14e95cc4bfa125633b838a7, type: 3}
+  level3Loop: {fileID: 8300000, guid: ce814d13ec36ea230a4389a5316f42c3, type: 3}
+  startGameNarrative: {fileID: 8300000, guid: e4cb90df02de7af4695e5f8c56d1e849, type: 3}
+  selectLevelNarrative: {fileID: 8300000, guid: d11977fff4bd9e34abada0559e23b9f8, type: 3}
+  completeLevelNarrative: {fileID: 8300000, guid: df6f5bf8d670c0a42b3b2d5687c56963, type: 3}
+  gameOverSound: {fileID: 8300000, guid: 4a89dd2329ab0cebea92ed76e3ce32ec, type: 3}
+  victorySound: {fileID: 8300000, guid: 9333795fd9566f0a9adea3e6b2bb9b4c, type: 3}
+  nextWaveSound: {fileID: 8300000, guid: e765bf88170123b9b91fcd2288675bb2, type: 3}
+  lowHealthSound: {fileID: 8300000, guid: a7322b5ff5e089e55b751d95bf5529b1, type: 3}
+  lowManaSound: {fileID: 8300000, guid: 7df2888707c2b8b4d9a8fa25ba235146, type: 3}
+  wrongSpellSound: {fileID: 8300000, guid: 62d9fa97afbb5127a88c487b4c9e5073, type: 3}
+  musicGroup: {fileID: -5119160264769764534, guid: 70dbfffd404fae249b0f705323db7946, type: 2}
+  sfxGroup: {fileID: -5892712606593477381, guid: 70dbfffd404fae249b0f705323db7946, type: 2}
+  narrativeGroup: {fileID: 3322968102381353305, guid: 70dbfffd404fae249b0f705323db7946, type: 2}
+--- !u!4 &1551380426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551380424}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.46555, y: 1.9113, z: 3.57577}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1591742876
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6099,10 +6163,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -8091218050815668505, guid: 7057bdda3808bb84b85b150169bed12a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1598680799}
+      addedObject: {fileID: 1598680798}
     - targetCorrespondingSourceObject: {fileID: -8091218050815668505, guid: 7057bdda3808bb84b85b150169bed12a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1598680798}
+      addedObject: {fileID: 1598680799}
   m_SourcePrefab: {fileID: 100100000, guid: 7057bdda3808bb84b85b150169bed12a, type: 3}
 --- !u!4 &1591742877 stripped
 Transform:
@@ -6292,6 +6356,13 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   runeSelectSound: {fileID: 8300000, guid: 4e8b24d61dedcd84789f5f52098bfc08, type: 3}
   spellReadySound: {fileID: 0}
+  castFireSound: {fileID: 8300000, guid: 70b3a976123f53a3ca910047b886700b, type: 3}
+  castIceSound: {fileID: 8300000, guid: 59bddf9f03377fc5d888c6f8aa14bb35, type: 3}
+  castPoisonSound: {fileID: 8300000, guid: 9923dc45a27779554ac5f97aa18db94a, type: 3}
+  castHealSound: {fileID: 8300000, guid: 6e555e012496a4bac92bb4d37dbe8dce, type: 3}
+  castManaSound: {fileID: 8300000, guid: 00c0f5f724f1b21eda6929239c0262bb, type: 3}
+  castShieldSound: {fileID: 8300000, guid: 30a96adaa6c275ce4be37f7773ac87c6, type: 3}
+  castBuffSound: {fileID: 8300000, guid: 19db3b03e34ea76d7a3e3edea174f39f, type: 3}
 --- !u!1 &1622130780
 GameObject:
   m_ObjectHideFlags: 0
@@ -6786,8 +6857,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1957060401}
   - component: {fileID: 1957060402}
-  - component: {fileID: 1957060404}
   - component: {fileID: 1957060405}
+  - component: {fileID: 1957060404}
   m_Layer: 3
   m_Name: tip
   m_TagString: wand
@@ -7226,6 +7297,7 @@ MonoBehaviour:
   healthRegenRate: 5
   maxHealthToRegen: 25
   invulnerabilityTime: 1.5
+  lowThreshold: 30
 --- !u!1 &2026382711
 GameObject:
   m_ObjectHideFlags: 0
@@ -7610,3 +7682,4 @@ SceneRoots:
   - {fileID: 1179343929}
   - {fileID: 2113435968}
   - {fileID: 523595254}
+  - {fileID: 1551380426}

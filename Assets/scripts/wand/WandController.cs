@@ -14,7 +14,7 @@ public partial class WandController : MonoBehaviour
     private static int PURPLEINDEX = 1;
     private static int BLUEINDEX = 2;
 
-    public Transform firePoint; // EL PUNTO DESDE DONDE SALE EL PROYECTIL (Punta de la varita)
+    public Transform firePoint;
     
     [Header("Referencias de Varitas")]
     public GameObject[] balls;
@@ -40,10 +40,9 @@ public partial class WandController : MonoBehaviour
     public float baseSpellCost = 0f;
     public float upSpellCost = 25f;
     public float aoeSpellCost = 25f;
-    public float specialSpellCost = 30f; // Para TP, Heal, Shield
+    public float specialSpellCost = 30f;
     public float manaSpellCost = 10f;
 
-    // Guardamos qué hechizo está cargado actualmente
     public enum ActiveSpell { None, Fire, Ice, Poison, FireUp, IceUp, PoisonUp, FireAOE, IceAOE, PoisonAOE, TP, Heal, Shield, Mana}
     private static ActiveSpell currentActiveSpell = ActiveSpell.None;
 
@@ -65,6 +64,15 @@ public partial class WandController : MonoBehaviour
     public AudioClip runeSelectSound;
     public AudioClip spellReadySound;
 
+    [Header("Sonidos de Hechizos (Casteo Compartido)")]
+    public AudioClip castFireSound;
+    public AudioClip castIceSound;
+    public AudioClip castPoisonSound;
+    public AudioClip castHealSound;
+    public AudioClip castManaSound;
+    public AudioClip castShieldSound;
+    public AudioClip castBuffSound;
+
     void Awake()
     {
         if (instance == null) { instance = this; }
@@ -74,6 +82,16 @@ public partial class WandController : MonoBehaviour
 
         if (audioSource != null) Debug.Log("WandController: AudioSource listo.");
         else Debug.LogWarning("WandController: No se encontró AudioSource en la varita.");
+    }
+
+    void Start()
+    {
+        if (audioSource != null && AudioManager.Instance != null && AudioManager.Instance.sfxGroup != null)
+        {
+            audioSource.outputAudioMixerGroup = AudioManager.Instance.sfxGroup;
+        }
+
+        SendHaptic(0.6f, 0.15f); // Vibración de retroceso al disparar
     }
 
     void OnEnable()
@@ -90,20 +108,18 @@ public partial class WandController : MonoBehaviour
 
     private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        Shoot(); // Llama a la función de disparo
+        Shoot();
     }
 
     private void Shoot()
     {
         if (currentActiveSpell == ActiveSpell.None || firePoint == null) return;
 
-        // Comprobar si seguimos en tiempo de enfriamiento (cooldown)
         if (Time.time < nextSpellTime)
         {
-            return; // Salimos de la función sin disparar ni gastar maná
+            return;
         }
 
-        // 1. Determinar coste de maná del hechizo actual
         float manaCost = 0f;
         switch (currentActiveSpell)
         {
@@ -127,21 +143,21 @@ public partial class WandController : MonoBehaviour
                 manaCost = manaSpellCost; break;
         }
 
-        // 2. Consumir maná antes de disparar
         if (PlayerController.Instance != null && !PlayerController.Instance.ConsumeMana(manaCost))
         {
             Debug.Log("No hay suficiente maná para lanzar el hechizo.");
-            return; // No disparamos si no hay maná
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(AudioManager.Instance.lowManaSound);
+            return;
         }
 
-        // 3. Aplicar el cooldown ya que el hechizo se va a lanzar
         nextSpellTime = Time.time + spellCooldown;
 
-        // 4. Manejar los hechizos que no disparan proyectiles
         if (currentActiveSpell == ActiveSpell.Mana)
         {
             if (PlayerController.Instance != null)
                 PlayerController.Instance.StartManaRecovery();
+            
+            if (audioSource != null && castManaSound != null) audioSource.PlayOneShot(castManaSound);
             return; 
         }
 
@@ -149,6 +165,8 @@ public partial class WandController : MonoBehaviour
         {
             if (PlayerController.Instance != null)
                 PlayerController.Instance.StartHealthRecovery();
+
+            if (audioSource != null && castHealSound != null) audioSource.PlayOneShot(castHealSound);
             return;
         }
 
@@ -156,31 +174,38 @@ public partial class WandController : MonoBehaviour
         {
             if (PlayerController.Instance != null)
                 PlayerController.Instance.ActivateShield();
+
+            if (audioSource != null && castShieldSound != null) audioSource.PlayOneShot(castShieldSound);
             return;
         }
 
         GameObject prefabToShoot = null;
+        AudioClip castClip = null;
 
-        // Elegir la bala correcta según el estado actual
         switch (currentActiveSpell)
         {
-            case ActiveSpell.Fire: prefabToShoot = fireProjectilePrefab; break;
-            case ActiveSpell.Ice: prefabToShoot = iceProjectilePrefab; break;
-            case ActiveSpell.Poison: prefabToShoot = poisonProjectilePrefab; break;
-            case ActiveSpell.FireUp: prefabToShoot = fireUpProjectilePrefab; break;
-            case ActiveSpell.IceUp: prefabToShoot = iceUpProjectilePrefab; break;
-            case ActiveSpell.PoisonUp: prefabToShoot = poisonUpProjectilePrefab; break;
-            case ActiveSpell.FireAOE: prefabToShoot = fireAOEProjectilePrefab; break;
-            case ActiveSpell.IceAOE: prefabToShoot = iceAOEProjectilePrefab; break;
-            case ActiveSpell.PoisonAOE: prefabToShoot = poisonAOEProjectilePrefab; break;
+            case ActiveSpell.Fire: prefabToShoot = fireProjectilePrefab; castClip = castFireSound; break;
+            case ActiveSpell.Ice: prefabToShoot = iceProjectilePrefab; castClip = castIceSound; break;
+            case ActiveSpell.Poison: prefabToShoot = poisonProjectilePrefab; castClip = castPoisonSound; break;
+            case ActiveSpell.FireUp: prefabToShoot = fireUpProjectilePrefab; castClip = castFireSound; break;
+            case ActiveSpell.IceUp: prefabToShoot = iceUpProjectilePrefab; castClip = castIceSound; break;
+            case ActiveSpell.PoisonUp: prefabToShoot = poisonUpProjectilePrefab; castClip = castPoisonSound; break;
+            case ActiveSpell.FireAOE: prefabToShoot = fireAOEProjectilePrefab; castClip = castFireSound; break;
+            case ActiveSpell.IceAOE: prefabToShoot = iceAOEProjectilePrefab; castClip = castIceSound; break;
+            case ActiveSpell.PoisonAOE: prefabToShoot = poisonAOEProjectilePrefab; castClip = castPoisonSound; break;
+            case ActiveSpell.TP: castClip = castBuffSound; break;
         }
 
         if (prefabToShoot != null)
         {
-            // Instanciar el proyectil en la posición y rotación de la punta de la varita
             Quaternion rotationToAdd = Quaternion.Euler(-90f, 0, 0);
 
             Instantiate(prefabToShoot, firePoint.position, firePoint.rotation * rotationToAdd);
+        }
+
+        if (castClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(castClip);
         }
     }
 
@@ -212,13 +237,12 @@ public partial class WandController : MonoBehaviour
 
         if (audioSource != null && runeSelectSound != null)
         {
-            // Incrementa un semitono por cada runa añadida
             int runeIndex = Spell.Count - 1;
             audioSource.pitch = Mathf.Pow(1.059463f, runeIndex);
             audioSource.PlayOneShot(runeSelectSound);
         }
 
-        SendHaptic(0.5f, 0.1f); // Vibración media para la selección de runa
+        SendHaptic(0.75f, 0.15f); // +50% más fuerte al recoger una runa
     }
 
     public void SendHaptic(float amplitude, float duration)
@@ -246,28 +270,19 @@ public partial class WandController : MonoBehaviour
 
         Debug.Log("Spell: " + string.Join(" - ", Spell));
 
-        // Si abrimos y cerramos sin seleccionar ninguna runa, simplemente mantenemos todo tal cual
         if (Spell.Count == 0)
         {
             Debug.Log("No se trazó ningún hechizo. Manteniendo el anterior.");
             return;
         }
 
-        // Parar regeneraciones activas de maná o salud si cambiamos de hechizo (como si se rompiese la concentración)
         if (PlayerController.Instance != null) PlayerController.Instance.CancelRegenerations();
 
-        // amarillo + cualquiera de los bases, hechizo potenciado
-        // amarillo + purpura + cualquiera de los bases, hechizo en area
-        // morado + verde = hechizo de curacion
-        // morado + azul = hechizo de escudo
-        // morado + rojo = hechizo de teleport
-        // rojo + verde + azul = recuperacion/regeneracion de mana
         var key = string.Join(",", Spell);
         bool isValidSpell = true;
 
         switch (key)
         {
-            // Hechizos base
             case "red":
                 Debug.Log("Hechizo de fuego");
                 currentActiveSpell = ActiveSpell.Fire;
@@ -286,7 +301,6 @@ public partial class WandController : MonoBehaviour
                 WandTypeSelector(POISONINDEX, null);
                 break;
 
-            // Amarillo + cualquiera de las bases -> Hechizo potenciado
             case "yellow,red":
                 Debug.Log("Hechizo potenciado (Fuego)");
                 currentActiveSpell = ActiveSpell.FireUp;
@@ -305,7 +319,6 @@ public partial class WandController : MonoBehaviour
                 WandTypeSelector(POISONINDEX, YELLOWINDEX);
                 break;
 
-            // Amarillo + morado + cualquiera de las bases -> Hechizo en area potenciado
             case "yellow,purple,red":
                 Debug.Log("Hechizo en area (Fuego)");
                 currentActiveSpell = ActiveSpell.FireAOE;
@@ -324,7 +337,6 @@ public partial class WandController : MonoBehaviour
                 WandTypeSelector(POISONINDEX, BLUEINDEX);
                 break;
 
-            // Hechizos especiales
             case "purple,red":
                 Debug.Log("Teleport");
                 currentActiveSpell = ActiveSpell.TP;
@@ -353,6 +365,8 @@ public partial class WandController : MonoBehaviour
             default:
                 Debug.Log("Hechizo invalido. Manteniendo el anterior.");
                 isValidSpell = false;
+                if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(AudioManager.Instance.wrongSpellSound);
+                instance.SendHaptic(0.8f, 0.25f); // Vibración de error
                 break;
         }
 
@@ -360,10 +374,10 @@ public partial class WandController : MonoBehaviour
         {
             if (instance.audioSource != null && instance.spellReadySound != null)
             {
-                instance.audioSource.pitch = 1f; // Restauramos el pitch a normal
+                instance.audioSource.pitch = 1f;
                 instance.audioSource.PlayOneShot(instance.spellReadySound);
             }
-            instance.SendHaptic(1.0f, 0.4f); // Vibración fuerte al confirmar hechizo
+            instance.SendHaptic(1.0f, 0.6f); // +50% de duración (al estar la fuerza ya al tope)
         }
 
         Spell.Clear();

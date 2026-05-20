@@ -16,11 +16,13 @@ public class AOEProjectile : MonoBehaviour
     [Tooltip("Distancia a la que se buscará el suelo para colocar el efecto correctamente")]
     public float floorSearchDistance = 10f;
 
+    [Header("Audio")]
+    public AudioClip impactSound;
+
     private bool hasExploded = false;
 
     void Start()
     {
-        // Destruir por si no choca con nada
         Destroy(gameObject, lifeTime);
 
         Rigidbody rb = GetComponent<Rigidbody>();
@@ -29,10 +31,8 @@ public class AOEProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Ignoramos colisiones con el propio jugador o con otros proyectiles
         if (other.gameObject.layer == LayerMask.NameToLayer("Player") || other.GetComponent<Projectile>() != null || other.GetComponent<AOEProjectile>() != null) return;
         
-        // Ignoramos triggers genéricos del entorno que no sean enemigos
         if (other.isTrigger && other.GetComponent<EnemyController>() == null) return;
 
         if (!hasExploded)
@@ -45,13 +45,19 @@ public class AOEProjectile : MonoBehaviour
     {
         hasExploded = true;
 
-        // Instanciar efecto en el suelo
+        if (impactSound != null)
+        {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySFXAtPoint(impactSound, transform.position);
+            else
+                AudioSource.PlayClipAtPoint(impactSound, transform.position);
+        }
+
         if (aoeEffectPrefab != null)
         {
             Vector3 effectPosition = transform.position;
             RaycastHit hit;
             
-            // Lanzamos un rayo hacia abajo para pegar el efecto al nivel del suelo
             if (Physics.Raycast(transform.position, Vector3.down, out hit, floorSearchDistance))
             {
                 effectPosition = hit.point;
@@ -60,7 +66,6 @@ public class AOEProjectile : MonoBehaviour
             Instantiate(aoeEffectPrefab, effectPosition, Quaternion.identity);
         }
 
-        // Encontrar y dañar a todos los enemigos en el radio
         Collider[] colliders = Physics.OverlapSphere(transform.position, aoeRadius);
         foreach (Collider col in colliders)
         {
@@ -71,7 +76,6 @@ public class AOEProjectile : MonoBehaviour
             }
         }
 
-        // 3. Destruir el proyectil
         Destroy(gameObject);
     }
 }

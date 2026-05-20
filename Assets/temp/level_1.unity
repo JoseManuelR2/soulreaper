@@ -18230,10 +18230,10 @@ MonoBehaviour:
   - {fileID: 1722366224}
   levelDoor: {fileID: 0}
   waves:
-  - totalEnemies: 5
+  - totalEnemies: 3
     maxSimultaneousEnemies: 1
     breakTime: 2
-  - totalEnemies: 5
+  - totalEnemies: 3
     maxSimultaneousEnemies: 2
     breakTime: 2
   - totalEnemies: 5
@@ -18241,12 +18241,6 @@ MonoBehaviour:
     breakTime: 2
   - totalEnemies: 10
     maxSimultaneousEnemies: 4
-    breakTime: 2
-  - totalEnemies: 10
-    maxSimultaneousEnemies: 5
-    breakTime: 2
-  - totalEnemies: 10
-    maxSimultaneousEnemies: 10
     breakTime: 2
   currentWaveIndex: 0
   enemiesSpawnedInWave: 0

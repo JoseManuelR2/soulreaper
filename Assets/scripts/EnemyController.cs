@@ -14,8 +14,17 @@ public class EnemyController : MonoBehaviour
     [Header("Atributos")]
     public float health = 100f;
     public float resistance = 10f;
-    public float damageToPlayer = 20f; // Daño que quita al contactar al jugador
-    public float manaRecovered = 30f; // Daño que quita al contactar al jugador
+    public float damageToPlayer = 20f;
+    public float manaRecovered = 30f;
+
+    [Header("Audio Espacial Zombie (3D)")]
+    public AudioSource audioSource;
+    public AudioClip ambientSound;
+    public AudioClip hurtSound;
+    public AudioClip attackSound;
+    public AudioClip deathSound;
+
+    private float lastAttackSoundTime = 0f;
 
     public event Action OnEnemyDeath; 
 
@@ -37,6 +46,16 @@ public class EnemyController : MonoBehaviour
         {
             player = Camera.main.transform;
         }
+
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+        if (audioSource != null) 
+        {
+            audioSource.spatialBlend = 1.0f;
+            if (AudioManager.Instance != null && AudioManager.Instance.sfxGroup != null)
+                audioSource.outputAudioMixerGroup = AudioManager.Instance.sfxGroup;
+        }
+        
+        StartCoroutine(AmbientSoundRoutine());
     }
 
     void Update()
@@ -58,13 +77,23 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private System.Collections.IEnumerator AmbientSoundRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(UnityEngine.Random.Range(3f, 8f));
+            if (ambientSound != null && audioSource != null && !audioSource.isPlaying)
+                audioSource.PlayOneShot(ambientSound);
+        }
+    }
+
     private void OnCollisionStay(Collision collision)
     {
         if (isDead) return;
 
-        // Detectamos si lo que tocamos es el jugador
         if (collision.gameObject.CompareTag("Player"))
         {
+            PlayAttackSound();
             PlayerController.Instance?.TakeDamage(damageToPlayer);
         }
     }
@@ -75,7 +104,17 @@ public class EnemyController : MonoBehaviour
 
         if (other.CompareTag("Player") || (other.transform.parent != null && other.transform.parent.CompareTag("Player")))
         {
+            PlayAttackSound();
             PlayerController.Instance?.TakeDamage(damageToPlayer);
+        }
+    }
+
+    private void PlayAttackSound()
+    {
+        if (Time.time - lastAttackSoundTime > 1.2f)
+        {
+            if (attackSound != null && audioSource != null) audioSource.PlayOneShot(attackSound);
+            lastAttackSoundTime = Time.time;
         }
     }
 
@@ -85,6 +124,8 @@ public class EnemyController : MonoBehaviour
 
         float finalDamage = Mathf.Max(damage - resistance, 0);
         health -= finalDamage;
+
+        if (hurtSound != null && audioSource != null) audioSource.PlayOneShot(hurtSound);
 
         Debug.Log("Zombi recibe daño. Vida restante: " + health);
 
@@ -96,7 +137,6 @@ public class EnemyController : MonoBehaviour
         isDead = true;
         agent.isStopped = true; 
 
-        // mirar al jugador al morir 
         if (player != null)
         {
             Vector3 directionToPlayer = (player.position - transform.position).normalized;
@@ -106,6 +146,14 @@ public class EnemyController : MonoBehaviour
             {
                 transform.rotation = Quaternion.LookRotation(directionToPlayer);
             }
+        }
+
+        if (deathSound != null) 
+        {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySFXAtPoint(deathSound, transform.position);
+            else
+                AudioSource.PlayClipAtPoint(deathSound, transform.position); 
         }
 
         anim.Play("Z_FallingBack");

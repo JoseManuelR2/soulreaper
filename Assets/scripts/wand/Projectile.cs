@@ -5,7 +5,10 @@ public class Projectile : MonoBehaviour
 {
     public float speed = 15f;
     public float damage = 35f;
-    public float lifeTime = 3f; // Tiempo antes de que se destruya solo si no choca
+    public float lifeTime = 3f;
+
+    [Header("Audio")]
+    public AudioClip impactSound;
 
     void Start()
     {
@@ -21,8 +24,15 @@ public class Projectile : MonoBehaviour
 
         if (enemy != null)
         {
+            if (impactSound != null)
+            {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySFXAtPoint(impactSound, transform.position);
+                else
+                    AudioSource.PlayClipAtPoint(impactSound, transform.position);
+            }
             enemy.TakeDamage(damage);
-            Destroy(gameObject); // Destruir la bola al impactar
+        Destroy(gameObject);
         }
     }
 }

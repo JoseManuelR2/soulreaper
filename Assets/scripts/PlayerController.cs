@@ -3,7 +3,6 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    // Patrón Singleton para acceder fácilmente desde otros scripts
     public static PlayerController Instance { get; private set; }
 
     [Header("Atributos")]
@@ -35,6 +34,10 @@ public class PlayerController : MonoBehaviour
     private float shieldDuration = 30f;
     private float shieldTimer = 0f;
 
+    [Header("Configuración Audio")]
+    public float lowThreshold = 30f;
+    private bool lowHealthPlayed = false;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -49,7 +52,7 @@ public class PlayerController : MonoBehaviour
         if (GameOverManager.isRetry)
         {
             transform.rotation *= Quaternion.Euler(0, 180f, 0);
-            GameOverManager.isRetry = false; // La apagamos para la próxima vez
+            GameOverManager.isRetry = false;
         }
     }
 
@@ -101,6 +104,8 @@ public class PlayerController : MonoBehaviour
                 hasShield = false;
             }
         }
+
+        if (health > lowThreshold) lowHealthPlayed = false;
     }
 
     public void TakeDamage(float amount)
@@ -109,7 +114,7 @@ public class PlayerController : MonoBehaviour
 
         if (hasShield)
         {
-            amount /= 2f; // Reducimos el daño a la mitad con el escudo
+            amount /= 2f;
             Debug.Log("Daño reducido a la mitad por el escudo activo.");
         }
 
@@ -117,6 +122,16 @@ public class PlayerController : MonoBehaviour
         health = Mathf.Clamp(health, 0, maxHealth);
         
         Debug.Log("Jugador recibe daño. Vida actual: " + health);
+
+        if (WandController.Instance != null)
+            WandController.Instance.SendHaptic(1.0f, 0.3f); // Golpe háptico al recibir daño
+
+        if (health <= lowThreshold && health > 0 && !lowHealthPlayed)
+        {
+            lowHealthPlayed = true;
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.lowHealthSound);
+        }
 
         if (health <= 0)
         {
@@ -136,7 +151,7 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         
-        return false; // No hay suficiente maná
+        return false;
     }
 
     public void StartManaRecovery()

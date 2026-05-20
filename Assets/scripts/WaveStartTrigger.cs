@@ -16,6 +16,14 @@ public class WaveStartTrigger : MonoBehaviour
 
             if (levelDoor != null) levelDoor.CloseDoor();
 
+            if (selector != null && AudioManager.Instance != null)
+            {
+                string currentScene = selector.GetCurrentSceneName();
+                if (currentScene == selector.level1Scene) AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.level1Loop);
+                else if (currentScene == selector.level2Scene) AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.level2Loop);
+                else if (currentScene == selector.level3Scene) AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.level3Loop);
+            }
+
             if (selector != null) selector.ResetInteractables();
             
             if (waveManager != null) waveManager.StartWaves();

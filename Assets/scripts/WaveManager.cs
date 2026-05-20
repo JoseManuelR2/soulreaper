@@ -104,10 +104,24 @@ public class WaveManager : MonoBehaviour
                 yield return new WaitForSeconds(0.5f);
             }
             
+            if (currentWaveIndex < waves.Count - 1 && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.nextWaveSound);
+            }
+
             yield return new WaitForSeconds(currentWave.breakTime); 
         }
         
         Debug.Log("Todas las oleadas terminadas.");
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.victorySound);
+            float delay = AudioManager.Instance.victorySound != null ? AudioManager.Instance.victorySound.length : 2f;
+            yield return new WaitForSeconds(delay);
+            AudioManager.Instance.PlayNarrative(AudioManager.Instance.completeLevelNarrative);
+        }
 
         if (levelDoor != null)
         {
