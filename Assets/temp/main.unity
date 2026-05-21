@@ -1811,9 +1811,17 @@ PrefabInstance:
     - {fileID: 7191191198719908328, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
     - {fileID: 7191191198719909655, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
     - {fileID: 7191191198719908292, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7191191198719729705, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
+      insertIndex: 57
+      addedObject: {fileID: 1081663665}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
+--- !u!4 &606407965 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7191191198719729705, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
+  m_PrefabInstance: {fileID: 606407964}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &662140233
 GameObject:
   m_ObjectHideFlags: 0
@@ -2609,6 +2617,76 @@ Transform:
 Camera:
   m_CorrespondingSourceObject: {fileID: 7917674758326848207, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
   m_PrefabInstance: {fileID: 1360158397}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1081663664
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 606407965}
+    m_Modifications:
+    - target: {fileID: 1030971974, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_Name
+      value: SM_gibbet_15 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_RootOrder
+      value: 58
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.468
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5582123
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9762962
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.2164391
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030971976, guid: abc00000000010579897395946532319, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: abc00000000010579897395946532319, type: 3}
+--- !u!4 &1081663665 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1030971975, guid: abc00000000010579897395946532319, type: 3}
+  m_PrefabInstance: {fileID: 1081663664}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1089464504
 GameObject:
