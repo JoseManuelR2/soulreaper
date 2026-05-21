@@ -120,7 +120,10 @@ public class PlayerController : MonoBehaviour
 
         health -= amount;
         health = Mathf.Clamp(health, 0, maxHealth);
-        
+
+        if (DamageOverlayController.Instance != null)
+            DamageOverlayController.Instance.ShowDamage();
+
         Debug.Log("Jugador recibe daño. Vida actual: " + health);
 
         if (WandController.Instance != null)
@@ -193,6 +196,12 @@ public class PlayerController : MonoBehaviour
     private void Die()
     {
         Debug.Log("El jugador ha muerto.");
+
+        if (DamageOverlayController.Instance != null)
+        {
+            DamageOverlayController.Instance.OnPlayerDeath();
+        }
+
         GameOverManager.Instance?.TriggerGameOver();
     }
 }
