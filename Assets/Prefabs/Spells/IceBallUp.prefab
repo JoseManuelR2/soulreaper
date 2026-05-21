@@ -29102,7 +29102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759234d6b1121a34a9fc960fc6e7cf42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
-  speed: 60
-  damage: 100
+  speed: 40
+  damage: 60
   lifeTime: 3
   impactSound: {fileID: 8300000, guid: 0ade9eace968ce59b8f548195b67de10, type: 3}

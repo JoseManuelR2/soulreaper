@@ -30,6 +30,10 @@ public class LevelSelector : MonoBehaviour
     private Vector3 lvl3StartPos;
     private Quaternion lvl3StartRot;
 
+    public static bool level1Completed = false;
+    public static bool level2Completed = false;
+    private static int easterEggCounter = 0;
+
     private void Start()
     {
         if (level1Object != null)
@@ -70,17 +74,36 @@ public class LevelSelector : MonoBehaviour
         if (interactableAncestor != null)
         {
             string sceneToLoad = "";
+            bool isLocked = false;
 
             if (interactableAncestor.name == "level1")
                 sceneToLoad = level1Scene;
             else if (interactableAncestor.name == "level2")
-                sceneToLoad = level2Scene;
+            {
+                if (level1Completed || easterEggCounter >= 10) sceneToLoad = level2Scene;
+                else isLocked = true;
+            }
             else if (interactableAncestor.name == "level3")
-                sceneToLoad = level3Scene;
+            {
+                if (level2Completed || easterEggCounter >= 10) sceneToLoad = level3Scene;
+                else isLocked = true;
+            }
+
+            if (isLocked)
+            {
+                easterEggCounter++;
+                if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(AudioManager.Instance.wrongSpellSound);
+                if (WandController.Instance != null) WandController.Instance.SendHaptic(0.8f, 0.25f);
+                return;
+            }
 
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
                 if (WandController.Instance != null) WandController.Instance.SendHaptic(0.5f, 0.2f);
+
+                TutorialMob mob = Object.FindFirstObjectByType<TutorialMob>();
+                if (mob != null) mob.DespawnMob();
+
                 StartCoroutine(LoadLevelAsync(sceneToLoad));
             }
         }

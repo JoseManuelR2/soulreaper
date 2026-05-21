@@ -91,7 +91,7 @@ public partial class WandController : MonoBehaviour
             audioSource.outputAudioMixerGroup = AudioManager.Instance.sfxGroup;
         }
 
-        SendHaptic(0.6f, 0.15f); // Vibración de retroceso al disparar
+        SendHaptic(0.6f, 0.15f);
     }
 
     void OnEnable()
@@ -242,7 +242,7 @@ public partial class WandController : MonoBehaviour
             audioSource.PlayOneShot(runeSelectSound);
         }
 
-        SendHaptic(0.75f, 0.15f); // +50% más fuerte al recoger una runa
+        SendHaptic(0.75f, 0.15f);
     }
 
     public void SendHaptic(float amplitude, float duration)
@@ -366,7 +366,7 @@ public partial class WandController : MonoBehaviour
                 Debug.Log("Hechizo invalido. Manteniendo el anterior.");
                 isValidSpell = false;
                 if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(AudioManager.Instance.wrongSpellSound);
-                instance.SendHaptic(0.8f, 0.25f); // Vibración de error
+                instance.SendHaptic(0.8f, 0.25f);
                 break;
         }
 
@@ -377,7 +377,7 @@ public partial class WandController : MonoBehaviour
                 instance.audioSource.pitch = 1f;
                 instance.audioSource.PlayOneShot(instance.spellReadySound);
             }
-            instance.SendHaptic(1.0f, 0.6f); // +50% de duración (al estar la fuerza ya al tope)
+            instance.SendHaptic(1.0f, 0.6f);
         }
 
         Spell.Clear();

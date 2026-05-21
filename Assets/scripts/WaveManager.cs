@@ -114,6 +114,14 @@ public class WaveManager : MonoBehaviour
         
         Debug.Log("Todas las oleadas terminadas.");
 
+        LevelSelector selector = Object.FindFirstObjectByType<LevelSelector>();
+        if (selector != null)
+        {
+            string currentScene = selector.GetCurrentSceneName();
+            if (currentScene == selector.level1Scene) LevelSelector.level1Completed = true;
+            else if (currentScene == selector.level2Scene) LevelSelector.level2Completed = true;
+        }
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopMusic();

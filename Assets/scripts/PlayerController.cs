@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Jugador recibe daño. Vida actual: " + health);
 
         if (WandController.Instance != null)
-            WandController.Instance.SendHaptic(1.0f, 0.3f); // Golpe háptico al recibir daño
+            WandController.Instance.SendHaptic(1.0f, 0.3f);
 
         if (health <= lowThreshold && health > 0 && !lowHealthPlayed)
         {

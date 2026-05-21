@@ -21,8 +21,9 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         EnemyController enemy = other.GetComponent<EnemyController>();
+        TutorialMob tutorialMob = other.GetComponent<TutorialMob>();
 
-        if (enemy != null)
+        if (enemy != null || tutorialMob != null)
         {
             if (impactSound != null)
             {
@@ -31,7 +32,8 @@ public class Projectile : MonoBehaviour
                 else
                     AudioSource.PlayClipAtPoint(impactSound, transform.position);
             }
-            enemy.TakeDamage(damage);
+            if (enemy != null) enemy.TakeDamage(damage);
+            if (tutorialMob != null) tutorialMob.TakeDamage(damage);
         Destroy(gameObject);
         }
     }

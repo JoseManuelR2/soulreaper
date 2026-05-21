@@ -30,6 +30,9 @@ public class LevelReturnTrigger : MonoBehaviour
                 {
                     AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.lobbyLoop);
                 }
+
+                TutorialMob mob = Object.FindFirstObjectByType<TutorialMob>();
+                if (mob != null) mob.RespawnMob();
             }
         }
     }

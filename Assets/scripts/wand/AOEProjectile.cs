@@ -33,7 +33,7 @@ public class AOEProjectile : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player") || other.GetComponent<Projectile>() != null || other.GetComponent<AOEProjectile>() != null) return;
         
-        if (other.isTrigger && other.GetComponent<EnemyController>() == null) return;
+        if (other.isTrigger && other.GetComponent<EnemyController>() == null && other.GetComponent<TutorialMob>() == null) return;
 
         if (!hasExploded)
         {
@@ -73,6 +73,12 @@ public class AOEProjectile : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
+            }
+
+            TutorialMob tutorialMob = col.GetComponent<TutorialMob>();
+            if (tutorialMob != null)
+            {
+                tutorialMob.TakeDamage(damage);
             }
         }
 
