@@ -1,69 +1,153 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation;
 
 public class PauseManager : MonoBehaviour
 {
+    public static PauseManager Instance { get; private set; }
     public static bool IsPaused = false;
 
-    [Header("UI")]
-    public GameObject pauseMenu;
+    [Header("Input")]
+    public InputActionProperty pauseAction;
 
-    [Header("References")]
-    public LevelSelector levelSelector;
-    public Transform xrOrigin;
+    private GameObject pauseMenu;
 
-    void Start()
+    // locomotion references (auto-found)
+    private ContinuousMoveProvider moveProvider;
+    private TeleportationProvider teleportProvider;
+
+    private void Awake()
     {
-        pauseMenu.SetActive(false);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-        if (levelSelector == null)
-            levelSelector = FindFirstObjectByType<LevelSelector>();
+        Transform menuTransform = transform.Find("PauseMenu");
+
+        if (menuTransform != null)
+        {
+            pauseMenu = menuTransform.gameObject;
+
+            menuTransform.Find("ResumeButton")
+                ?.GetComponent<Button>()
+                ?.onClick.AddListener(Resume);
+
+            menuTransform.Find("LobbyButton")
+                ?.GetComponent<Button>()
+                ?.onClick.AddListener(GoToLobby);
+
+            menuTransform.Find("ExitButton")
+                ?.GetComponent<Button>()
+                ?.onClick.AddListener(QuitGame);
+        }
     }
 
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
+
+        // auto-find locomotion in scene
+        moveProvider = FindFirstObjectByType<ContinuousMoveProvider>();
+        teleportProvider = FindFirstObjectByType<TeleportationProvider>();
+    }
+
+    private void OnEnable()
+    {
+        pauseAction.action.Enable();
+        pauseAction.action.performed += OnPausePressed;
+    }
+
+    private void OnDisable()
+    {
+        pauseAction.action.performed -= OnPausePressed;
+        pauseAction.action.Disable();
+    }
+    private void OnPausePressed(InputAction.CallbackContext ctx)
+    {
+        if (GameOverManager.Instance != null)
         {
-            if (IsPaused) Resume();
-            else Pause();
+            Transform gameOverMenu =
+                GameOverManager.Instance.transform.Find("GameOverMenu");
+
+            if (gameOverMenu != null && gameOverMenu.gameObject.activeSelf)
+            {
+                Debug.Log("PAUSE BLOQUEADO: GAME OVER ACTIVO");
+                return;
+            }
         }
+
+        if (IsPaused) Resume();
+        else Pause();
     }
 
     public void Pause()
     {
         IsPaused = true;
 
-        pauseMenu.SetActive(true);
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(true);
+            PositionMenuInFrontOfCamera();
+        }
 
-        Time.timeScale = 0f;
+        SetLocomotionEnabled(false);
+
+        Debug.Log("PAUSE ENABLED");
     }
 
     public void Resume()
     {
         IsPaused = false;
 
-        pauseMenu.SetActive(false);
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
 
-        Time.timeScale = 1f;
+        SetLocomotionEnabled(true);
+
+        Debug.Log("PAUSE DISABLED");
+    }
+
+    // CORE LOGIC
+    private void SetLocomotionEnabled(bool enabled)
+    {
+        if (moveProvider != null)
+            moveProvider.enabled = enabled;
+
+        if (teleportProvider != null)
+            teleportProvider.enabled = enabled;
+    }
+
+    private void PositionMenuInFrontOfCamera()
+    {
+        if (pauseMenu == null || Camera.main == null) return;
+
+        Transform cam = Camera.main.transform;
+
+        Vector3 forward = cam.forward;
+        forward.y = 0;
+        if (forward == Vector3.zero) forward = cam.forward;
+        forward.Normalize();
+
+        pauseMenu.transform.position = cam.position + forward * 1.5f;
+        pauseMenu.transform.rotation = Quaternion.LookRotation(forward);
     }
 
     public void GoToLobby()
     {
-        Resume(); // importante: limpia pausa primero
+        Resume();
 
-        if (levelSelector != null)
-        {
-            levelSelector.GoToLobby();
-        }
-        else
-        {
-            Debug.LogError("No LevelSelector found!");
-        }
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.lobbyLoop);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitGame()
     {
-        Time.timeScale = 1f;
-
         Application.Quit();
 
 #if UNITY_EDITOR
