@@ -31,10 +31,18 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int enemiesSpawnedInWave = 0;
     [SerializeField] private int currentEnemiesAlive = 0;
 
+    private VRVictoryUI vrVictoryUI;
     private int lastSpawnIndex = -1;
 
     void Start()
     {
+        Camera cam = Camera.main;
+
+        if (cam != null)
+        {
+            vrVictoryUI = cam.GetComponent<VRVictoryUI>();
+        }
+
         if (levelDoor == null)
         {
             GameObject doorObj = GameObject.Find("Door_02_reinforced");
@@ -124,8 +132,13 @@ public class WaveManager : MonoBehaviour
 
         if (AudioManager.Instance != null)
         {
+
             AudioManager.Instance.StopMusic();
             AudioManager.Instance.PlaySFX(AudioManager.Instance.victorySound);
+            if (vrVictoryUI != null)
+            {
+                vrVictoryUI.ShowVictory();
+            }
             float delay = AudioManager.Instance.victorySound != null ? AudioManager.Instance.victorySound.length : 2f;
             yield return new WaitForSeconds(delay);
             AudioManager.Instance.PlayNarrative(AudioManager.Instance.completeLevelNarrative);
