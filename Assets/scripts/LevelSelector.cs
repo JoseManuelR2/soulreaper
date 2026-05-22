@@ -244,4 +244,32 @@ public class LevelSelector : MonoBehaviour
         currentSceneLoaded = ""; 
         Debug.Log("Nivel descargado");
     }
+
+    public void GoToLobby()
+    {
+        StartCoroutine(GoToLobbyRoutine());
+    }
+
+    private IEnumerator GoToLobbyRoutine()
+    {
+        if (!string.IsNullOrEmpty(currentSceneLoaded))
+        {
+            yield return SceneManager.UnloadSceneAsync(currentSceneLoaded);
+            currentSceneLoaded = "";
+        }
+
+        ResetInteractables();
+
+        ResetPlayerToLobby();
+    }
+    private void ResetPlayerToLobby()
+    {
+        GameObject xrRig = GameObject.FindGameObjectWithTag("Player");
+
+        if (xrRig != null)
+        {
+            xrRig.transform.position = Vector3.zero;
+            xrRig.transform.rotation = Quaternion.identity;
+        }
+    }
 }
