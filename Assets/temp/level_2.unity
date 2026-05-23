@@ -654,7 +654,7 @@ Transform:
   m_GameObject: {fileID: 97575437}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.25, y: 0, z: 6.04}
+  m_LocalPosition: {x: 18.31, y: 0, z: 10.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -685,7 +685,7 @@ Transform:
   m_GameObject: {fileID: 105182708}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 13.58503, y: 0, z: -6.4721904}
+  m_LocalPosition: {x: 14.46, y: 0, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2406,7 +2406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d73f75f8da152954fb5ab30930071f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
-  enemyPrefab: {fileID: 5025574804217827672, guid: d398db4157e2f4e6b8457f0b469b83ac, type: 3}
+  enemyPrefab: {fileID: 5025574804217827672, guid: 4d1b9076fb45c6e43ba7e9595b02b7f6, type: 3}
   spawnPoints:
   - {fileID: 105182709}
   - {fileID: 97575438}
@@ -2416,23 +2416,20 @@ MonoBehaviour:
   levelDoor: {fileID: 0}
   waves:
   - totalEnemies: 5
-    maxSimultaneousEnemies: 1
-    breakTime: 2
-  - totalEnemies: 5
     maxSimultaneousEnemies: 2
-    breakTime: 2
+    breakTime: 3
   - totalEnemies: 5
     maxSimultaneousEnemies: 4
-    breakTime: 2
+    breakTime: 3
   - totalEnemies: 10
     maxSimultaneousEnemies: 4
-    breakTime: 2
-  - totalEnemies: 10
-    maxSimultaneousEnemies: 5
-    breakTime: 2
-  - totalEnemies: 10
-    maxSimultaneousEnemies: 10
-    breakTime: 2
+    breakTime: 5
+  - totalEnemies: 12
+    maxSimultaneousEnemies: 6
+    breakTime: 5
+  - totalEnemies: 18
+    maxSimultaneousEnemies: 6
+    breakTime: 5
   currentWaveIndex: 0
   enemiesSpawnedInWave: 0
   currentEnemiesAlive: 0
@@ -3707,7 +3704,7 @@ Transform:
   m_GameObject: {fileID: 854948700}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.54, y: 0, z: 8.96}
+  m_LocalPosition: {x: 12.98, y: 0, z: 12.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3725,7 +3722,7 @@ GameObject:
   - component: {fileID: 880533418}
   - component: {fileID: 880533417}
   - component: {fileID: 880533419}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}

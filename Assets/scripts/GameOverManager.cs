@@ -16,9 +16,18 @@ public class GameOverManager : MonoBehaviour
     private Image redFadeImage;
     private GameObject gameOverMenu;
 
+    public GameObject leftLineVisual;
+    public GameObject rightLineVisual;
+
     [Header("Configuración de Animación")]
     [Tooltip("Duración en segundos del fundido a rojo.")]
     [SerializeField] private float fadeDuration = 2.5f;
+
+    private void SetLineVisualsEnabled(bool enabled)
+    {
+        if (leftLineVisual != null) leftLineVisual.SetActive(enabled);
+        if (rightLineVisual != null) rightLineVisual.SetActive(enabled);
+    }
 
     private void Awake()
     {
@@ -121,6 +130,8 @@ public class GameOverManager : MonoBehaviour
             }
 
             gameOverMenu.SetActive(true);
+            SetLineVisualsEnabled(true);
+
         }
     }
 
@@ -128,6 +139,7 @@ public class GameOverManager : MonoBehaviour
     {
         isRetry = true;
         if (AudioManager.Instance != null) AudioManager.Instance.PlayLoopMusic(AudioManager.Instance.lobbyLoop);
+        SetLineVisualsEnabled(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

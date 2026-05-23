@@ -17,6 +17,8 @@ public class SpellMenu : MonoBehaviour
     void Update()
     {
         if (gripAction.action == null) return;
+        
+        if (PauseManager.IsPaused) return;
 
         if (gripAction.action.WasPressedThisFrame()) SpawnPentagon();
         if (gripAction.action.WasReleasedThisFrame()) DestroyPentagon();

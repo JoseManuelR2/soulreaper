@@ -1892,7 +1892,7 @@ GameObject:
   - component: {fileID: -610622957320583355}
   - component: {fileID: -668137062307525294}
   m_Layer: 0
-  m_Name: Zombie_Standard
+  m_Name: Zombie_Standard 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1986,8 +1986,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   canMove: 1
   detectionRange: 20
-  moveSpeed: 0.2
-  health: 100
+  moveSpeed: 0.4
+  health: 120
   resistance: 0
   damageToPlayer: 20
   manaRecovered: 30

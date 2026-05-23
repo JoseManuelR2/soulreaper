@@ -113,6 +113,9 @@ public partial class WandController : MonoBehaviour
 
     private void Shoot()
     {
+        // Prevent shooting if the game is paused
+        if (PauseManager.IsPaused) return;
+
         if (currentActiveSpell == ActiveSpell.None || firePoint == null) return;
 
         if (Time.time < nextSpellTime)

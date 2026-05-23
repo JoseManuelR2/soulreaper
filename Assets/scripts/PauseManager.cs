@@ -14,9 +14,12 @@ public class PauseManager : MonoBehaviour
     [Header("Input")]
     public InputActionProperty pauseAction;
 
+    [Header("Line Visuals")]
+    public GameObject leftLineVisual;
+    public GameObject rightLineVisual;
+
     private GameObject pauseMenu;
 
-    // locomotion references (auto-found)
     private ContinuousMoveProvider moveProvider;
     private TeleportationProvider teleportProvider;
 
@@ -53,6 +56,9 @@ public class PauseManager : MonoBehaviour
         // auto-find locomotion in scene
         moveProvider = FindFirstObjectByType<ContinuousMoveProvider>();
         teleportProvider = FindFirstObjectByType<TeleportationProvider>();
+        
+        // Ensure line visuals are disabled during normal gameplay
+        SetLineVisualsEnabled(false);
     }
 
     private void OnEnable()
@@ -66,6 +72,7 @@ public class PauseManager : MonoBehaviour
         pauseAction.action.performed -= OnPausePressed;
         pauseAction.action.Disable();
     }
+
     private void OnPausePressed(InputAction.CallbackContext ctx)
     {
         if (GameOverManager.Instance != null)
@@ -94,7 +101,12 @@ public class PauseManager : MonoBehaviour
             PositionMenuInFrontOfCamera();
         }
 
+        SetLineVisualsEnabled(true);
+
         SetLocomotionEnabled(false);
+
+        // Freezes all in-game time (enemies, physics, spawning, health/mana regen)
+        Time.timeScale = 0f;
 
         Debug.Log("PAUSE ENABLED");
     }
@@ -106,9 +118,20 @@ public class PauseManager : MonoBehaviour
         if (pauseMenu != null)
             pauseMenu.SetActive(false);
 
+        SetLineVisualsEnabled(false);
+
         SetLocomotionEnabled(true);
 
+        // Resumes all in-game time
+        Time.timeScale = 1f;
+
         Debug.Log("PAUSE DISABLED");
+    }
+
+    private void SetLineVisualsEnabled(bool enabled)
+    {
+        if (leftLineVisual != null) leftLineVisual.SetActive(enabled);
+        if (rightLineVisual != null) rightLineVisual.SetActive(enabled);
     }
 
     // CORE LOGIC
