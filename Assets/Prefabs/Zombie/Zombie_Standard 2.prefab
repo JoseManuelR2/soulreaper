@@ -1987,7 +1987,7 @@ MonoBehaviour:
   canMove: 1
   detectionRange: 20
   moveSpeed: 0.4
-  health: 120
+  health: 110
   resistance: 0
   damageToPlayer: 20
   manaRecovered: 30

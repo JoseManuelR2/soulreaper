@@ -8942,7 +8942,7 @@ MonoBehaviour:
   iceUpProjectilePrefab: {fileID: 8423333546025224644, guid: f18d6167ab4bec44da4de27d507debbd, type: 3}
   poisonUpProjectilePrefab: {fileID: 8423333546025224644, guid: ad14d48fbcb82e240a2e0ac8dc7bdeb4, type: 3}
   fireAOEProjectilePrefab: {fileID: 8423333546025224644, guid: f645dbb95023a984a860c234b94b7379, type: 3}
-  iceAOEProjectilePrefab: {fileID: 8423333546025224644, guid: 39c5626e23157b64c92e2763d3c0373a, type: 3}
+  iceAOEProjectilePrefab: {fileID: 4958573302950384789, guid: 39c5626e23157b64c92e2763d3c0373a, type: 3}
   poisonAOEProjectilePrefab: {fileID: 8423333546025224644, guid: fe540cc2f6121034fab613296188768b, type: 3}
   baseSpellCost: 0
   upSpellCost: 25
