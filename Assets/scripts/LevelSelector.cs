@@ -34,6 +34,23 @@ public class LevelSelector : MonoBehaviour
     public static bool level2Completed = false;
     private static int easterEggCounter = 0;
 
+    [Header("Lighting Settings")]
+    public Light directionalLight;
+
+    [Range(0f, 8f)] public float world1Intensity = 1f;
+    [Range(1000f, 20000f)] public float world1Temperature = 6500f;
+
+    [Range(0f, 8f)] public float world2Intensity = 0.7f;
+    [Range(1000f, 20000f)] public float world2Temperature = 3500f;
+
+    [Range(0f, 8f)] public float world3Intensity = 0.4f;
+    [Range(1000f, 20000f)] public float world3Temperature = 13000f;
+
+    [Header("Light Transition")]
+    public float lightTransitionDuration = 2f;
+
+    private Coroutine lightTransitionCoroutine;
+
     private void Start()
     {
         if (level1Object != null)
@@ -53,6 +70,7 @@ public class LevelSelector : MonoBehaviour
             lvl3StartPos = level3Object.position;
             lvl3StartRot = level3Object.rotation;
         }
+        ApplyWorldLighting(1);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -185,6 +203,22 @@ public class LevelSelector : MonoBehaviour
         }
 
         currentSceneLoaded = sceneName;
+        if (sceneName == level1Scene)
+        {
+            ApplyWorldLighting(1);
+        }
+        else if (sceneName == level2Scene)
+        {
+            ApplyWorldLighting(2);
+        }
+        else if (sceneName == level3Scene)
+        {
+            ApplyWorldLighting(3);
+        }
+        else
+        {
+            ApplyWorldLighting(1);
+        }
         Debug.Log("Escena cargada: " + sceneName);
         isLoading = false;
     }
@@ -241,7 +275,8 @@ public class LevelSelector : MonoBehaviour
         AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentSceneLoaded);
         yield return unloadOp;
 
-        currentSceneLoaded = ""; 
+        currentSceneLoaded = "";
+        ApplyWorldLighting(1);
         Debug.Log("Nivel descargado");
     }
 
@@ -256,6 +291,7 @@ public class LevelSelector : MonoBehaviour
         {
             yield return SceneManager.UnloadSceneAsync(currentSceneLoaded);
             currentSceneLoaded = "";
+            ApplyWorldLighting(1);
         }
 
         ResetInteractables();
@@ -271,5 +307,80 @@ public class LevelSelector : MonoBehaviour
             xrRig.transform.position = Vector3.zero;
             xrRig.transform.rotation = Quaternion.identity;
         }
+    }
+
+    private void ApplyWorldLighting(int world)
+    {
+        if (directionalLight == null) return;
+
+        directionalLight.useColorTemperature = true;
+
+        float targetIntensity = world1Intensity;
+        float targetTemperature = world1Temperature;
+
+        switch (world)
+        {
+            case 1:
+                targetIntensity = world1Intensity;
+                targetTemperature = world1Temperature;
+                break;
+
+            case 2:
+                targetIntensity = world2Intensity;
+                targetTemperature = world2Temperature;
+                break;
+
+            case 3:
+                targetIntensity = world3Intensity;
+                targetTemperature = world3Temperature;
+                break;
+        }
+
+        // Si ya había una transición, la cancelamos
+        if (lightTransitionCoroutine != null)
+        {
+            StopCoroutine(lightTransitionCoroutine);
+        }
+
+        lightTransitionCoroutine = StartCoroutine(
+            SmoothLightTransition(targetIntensity, targetTemperature)
+        );
+    }
+    private IEnumerator SmoothLightTransition(float targetIntensity, float targetTemperature)
+    {
+        float startIntensity = directionalLight.intensity;
+        float startTemperature = directionalLight.colorTemperature;
+
+        float elapsed = 0f;
+
+        while (elapsed < lightTransitionDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / lightTransitionDuration;
+
+            // SmoothStep hace el movimiento más natural
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            directionalLight.intensity = Mathf.Lerp(
+                startIntensity,
+                targetIntensity,
+                t
+            );
+
+            directionalLight.colorTemperature = Mathf.Lerp(
+                startTemperature,
+                targetTemperature,
+                t
+            );
+
+            yield return null;
+        }
+
+        // Asegurar valores finales exactos
+        directionalLight.intensity = targetIntensity;
+        directionalLight.colorTemperature = targetTemperature;
+
+        lightTransitionCoroutine = null;
     }
 }

@@ -6033,7 +6033,7 @@ Light:
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
-  m_ColorTemperature: 5840
+  m_ColorTemperature: 13155
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 1e-44, y: 7e-45, z: 8e-45, w: 1e-44}
   m_UseBoundingSphereOverride: 0
@@ -9268,6 +9268,14 @@ MonoBehaviour:
   level1Object: {fileID: 1992084110}
   level2Object: {fileID: 74700950}
   level3Object: {fileID: 1508282176}
+  directionalLight: {fileID: 1254561281}
+  world1Intensity: 1
+  world1Temperature: 6500
+  world2Intensity: 0.7
+  world2Temperature: 3500
+  world3Intensity: 0.4
+  world3Temperature: 13000
+  lightTransitionDuration: 2
 --- !u!4 &1740216950 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7191191198719908197, guid: d1074cf1fb6ec3d45a4b3eec903ef7f7, type: 3}
