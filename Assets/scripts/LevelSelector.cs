@@ -37,14 +37,14 @@ public class LevelSelector : MonoBehaviour
     [Header("Lighting Settings")]
     public Light directionalLight;
 
-    [Range(0f, 8f)] public float world1Intensity = 1f;
+    [Range(0f, 500f)] public float world1Intensity = 500f;
     [Range(1000f, 20000f)] public float world1Temperature = 6500f;
 
-    [Range(0f, 8f)] public float world2Intensity = 0.7f;
+    [Range(0f, 500f)] public float world2Intensity = 300f;
     [Range(1000f, 20000f)] public float world2Temperature = 3500f;
 
-    [Range(0f, 8f)] public float world3Intensity = 0.4f;
-    [Range(1000f, 20000f)] public float world3Temperature = 13000f;
+    [Range(0f, 500f)] public float world3Intensity = 100f;
+    [Range(1000f, 20000f)] public float world3Temperature = 3500f;
 
     [Header("Light Transition")]
     public float lightTransitionDuration = 2f;
