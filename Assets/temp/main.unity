@@ -9270,10 +9270,10 @@ MonoBehaviour:
   level3Object: {fileID: 1508282176}
   directionalLight: {fileID: 1254561281}
   world1Intensity: 500
-  world1Temperature: 6500
-  world2Intensity: 8
+  world1Temperature: 5000
+  world2Intensity: 300
   world2Temperature: 3500
-  world3Intensity: 8
+  world3Intensity: 200
   world3Temperature: 13000
   lightTransitionDuration: 0.5
 --- !u!4 &1740216950 stripped
